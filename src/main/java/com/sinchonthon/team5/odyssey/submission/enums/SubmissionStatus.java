@@ -1,4 +1,4 @@
-package com.sinchonthon.team5.odyssey.submission.dto;
+package com.sinchonthon.team5.odyssey.submission.enums;
 
 public enum SubmissionStatus {
     SUBMITTED,
