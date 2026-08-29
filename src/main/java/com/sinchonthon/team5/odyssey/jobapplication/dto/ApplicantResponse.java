@@ -5,7 +5,7 @@ import com.sinchonthon.team5.odyssey.jobapplication.enums.JobApplicationStatus;
 import java.time.OffsetDateTime;
 
 public record ApplicantResponse(
-        Long applicantId,
+        Long applicationId,
         StudentSummary student,
         String message,
         JobApplicationStatus status,
