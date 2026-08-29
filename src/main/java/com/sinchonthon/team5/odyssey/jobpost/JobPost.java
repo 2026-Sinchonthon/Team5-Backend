@@ -33,6 +33,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobPost {
 
+    public static final int MAX_IMAGE_COUNT = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -154,6 +156,10 @@ public class JobPost {
 
     public void cancel() {
         this.status = JobPostStatus.CANCELED;
+    }
+
+    public boolean canAddImage() {
+        return images.size() < MAX_IMAGE_COUNT;
     }
 
     public JobPostImage addImage(String imageUrl) {
