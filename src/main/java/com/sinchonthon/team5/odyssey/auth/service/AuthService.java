@@ -2,7 +2,10 @@ package com.sinchonthon.team5.odyssey.auth.service;
 
 import com.sinchonthon.team5.odyssey.auth.dto.request.OwnerSignUpRequest;
 import com.sinchonthon.team5.odyssey.auth.dto.request.StudentSignUpRequest;
+import com.sinchonthon.team5.odyssey.auth.dto.request.LoginRequest;
+import com.sinchonthon.team5.odyssey.auth.dto.response.LoginResponse;
 import com.sinchonthon.team5.odyssey.auth.dto.response.SignUpResponse;
+import com.sinchonthon.team5.odyssey.auth.jwt.JwtTokenProvider;
 import com.sinchonthon.team5.odyssey.global.exception.GeneralException;
 import com.sinchonthon.team5.odyssey.member.code.MemberErrorCode;
 import com.sinchonthon.team5.odyssey.member.domain.Member;
@@ -29,6 +32,18 @@ public class AuthService {
     private final StudentProfileRepository studentProfileRepository;
     private final OwnerProfileRepository ownerProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public LoginResponse login(LoginRequest request) {
+        Member member = memberRepository.findByEmail(request.email().trim().toLowerCase(Locale.ROOT))
+                .orElseThrow(() -> new GeneralException(MemberErrorCode.INVALID_CREDENTIALS));
+
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
+            throw new GeneralException(MemberErrorCode.INVALID_CREDENTIALS);
+        }
+
+        return LoginResponse.of(jwtTokenProvider.createAccessToken(member), member);
+    }
 
     public SignUpResponse signUpStudent(StudentSignUpRequest request) {
         Long universityId = SupportedUniversity.fromEmail(request.email().trim().toLowerCase(Locale.ROOT))

@@ -1,7 +1,10 @@
 package com.sinchonthon.team5.odyssey.auth.controller;
 
+import com.sinchonthon.team5.odyssey.auth.code.AuthSuccessCode;
 import com.sinchonthon.team5.odyssey.auth.dto.request.OwnerSignUpRequest;
 import com.sinchonthon.team5.odyssey.auth.dto.request.StudentSignUpRequest;
+import com.sinchonthon.team5.odyssey.auth.dto.request.LoginRequest;
+import com.sinchonthon.team5.odyssey.auth.dto.response.LoginResponse;
 import com.sinchonthon.team5.odyssey.auth.dto.response.SignUpResponse;
 import com.sinchonthon.team5.odyssey.auth.service.AuthService;
 import com.sinchonthon.team5.odyssey.global.api.ApiResponse;
@@ -40,5 +43,10 @@ public class AuthController {
         SignUpResponse response = authService.signUpOwner(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.onSuccess(GeneralSuccessCode.CREATED, response));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(AuthSuccessCode.LOGIN_SUCCESS, authService.login(request)));
     }
 }
