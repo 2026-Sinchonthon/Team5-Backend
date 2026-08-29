@@ -8,8 +8,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "members")
 public class Member {
 
@@ -34,8 +39,6 @@ public class Member {
     @Column(nullable = false, length = 20)
     private MemberStatus status;
 
-    protected Member() {
-    }
 
     private Member(String email, String password, String name, MemberRole role) {
         this.email = email;
@@ -49,19 +52,5 @@ public class Member {
         return new Member(email, encodedPassword, name, role);
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public MemberRole getRole() {
-        return role;
-    }
 }

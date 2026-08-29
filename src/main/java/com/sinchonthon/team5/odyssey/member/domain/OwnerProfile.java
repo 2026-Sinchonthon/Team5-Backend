@@ -8,8 +8,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "owner_profiles")
 public class OwnerProfile {
 
@@ -31,8 +36,6 @@ public class OwnerProfile {
     @Column(length = 500)
     private String introduction;
 
-    protected OwnerProfile() {
-    }
 
     public OwnerProfile(Member member, String businessName, String address, String introduction) {
         this.member = member;
