@@ -102,6 +102,10 @@ public class JobPostService {
         validateOwner(jobPost, ownerId);
         validateEditable(jobPost);
 
+        if (!jobPost.canAddImage()) {
+            throw new GeneralException(JobPostErrorCode.IMAGE_LIMIT_EXCEEDED);
+        }
+
         return JobPostImageResponse.from(jobPost.addImage(request.imageUrl()));
     }
 
