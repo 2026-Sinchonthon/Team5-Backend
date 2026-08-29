@@ -4,7 +4,9 @@ import com.sinchonthon.team5.odyssey.jobapplication.domain.JobApplication;
 import com.sinchonthon.team5.odyssey.jobapplication.enums.JobApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
 
 import java.util.List;
 
@@ -67,6 +69,17 @@ public interface JobApplicationRepository
             order by a.appliedAt desc
             """)
     List<ApplicantProjection> findApplicantProjectionsByJobPostId(
+            @Param("jobPostId") Long jobPostId
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select a
+            from JobApplication a
+            where a.jobPostId = :jobPostId
+            order by a.id
+            """)
+    List<JobApplication> findAllByJobPostIdForUpdate(
             @Param("jobPostId") Long jobPostId
     );
 }
