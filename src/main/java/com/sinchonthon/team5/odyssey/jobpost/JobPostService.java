@@ -11,10 +11,13 @@ import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostDetailResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostOwnerResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.enums.JobPostSortType;
+import com.sinchonthon.team5.odyssey.member.domain.OwnerProfile;
+import com.sinchonthon.team5.odyssey.member.repository.OwnerProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
@@ -27,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class JobPostService {
     private static final String STORAGE_DIRECTORY = "job-posts";
 
     private final JobPostRepository jobPostRepository;
+    private final OwnerProfileRepository ownerProfileRepository;
     private final ObjectProvider<FileStorageService> fileStorageServiceProvider;
 
     @Transactional
@@ -113,24 +119,48 @@ public class JobPostService {
         Page<JobPost> result =
                 jobPostRepository.findAll(spec, pageRequest);
 
+        Map<Long, String> businessNamesByOwnerId = businessNamesByOwnerId(
+                result.getContent().stream().map(JobPost::getOwnerId).toList()
+        );
+
         return PageResponse.from(
                 result,
-                JobPostListItemResponse::from
+                jobPost -> JobPostListItemResponse.from(
+                        jobPost,
+                        businessNamesByOwnerId.get(jobPost.getOwnerId())
+                )
         );
     }
 
     public JobPostDetailResponse getDetail(Long jobPostId) {
-        return JobPostDetailResponse.from(
-                findJobPostOrThrow(jobPostId)
-        );
+        JobPost jobPost = findJobPostOrThrow(jobPostId);
+        JobPostOwnerResponse owner = ownerProfileRepository.findById(jobPost.getOwnerId())
+                .map(JobPostOwnerResponse::from)
+                .orElse(null);
+
+        return JobPostDetailResponse.from(jobPost, owner);
     }
 
     public List<JobPostListItemResponse> getMyList(Long ownerId) {
-        return jobPostRepository
-                .findAllByOwnerIdOrderByCreatedAtDesc(ownerId)
-                .stream()
-                .map(JobPostListItemResponse::from)
+        List<JobPost> jobPosts = jobPostRepository
+                .findAllByOwnerIdOrderByCreatedAtDesc(ownerId);
+
+        String businessName = ownerProfileRepository.findById(ownerId)
+                .map(OwnerProfile::getBusinessName)
+                .orElse(null);
+
+        return jobPosts.stream()
+                .map(jobPost -> JobPostListItemResponse.from(jobPost, businessName))
                 .toList();
+    }
+
+    private Map<Long, String> businessNamesByOwnerId(List<Long> ownerIds) {
+        return ownerProfileRepository.findAllById(ownerIds.stream().distinct().toList())
+                .stream()
+                .collect(Collectors.toMap(
+                        OwnerProfile::getMemberId,
+                        OwnerProfile::getBusinessName
+                ));
     }
 
     @Transactional

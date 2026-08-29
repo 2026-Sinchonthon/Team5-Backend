@@ -9,7 +9,6 @@ import java.util.List;
 
 public record JobPostDetailResponse(
         Long jobPostId,
-        Long ownerId,
         String title,
         String description,
         List<JobPostImageResponse> images,
@@ -18,13 +17,13 @@ public record JobPostDetailResponse(
         OffsetDateTime deadline,
         Integer revisionLimit,
         JobPostStatus status,
+        JobPostOwnerResponse owner,
         OffsetDateTime createdAt
 ) {
 
-    public static JobPostDetailResponse from(JobPost jobPost) {
+    public static JobPostDetailResponse from(JobPost jobPost, JobPostOwnerResponse owner) {
         return new JobPostDetailResponse(
                 jobPost.getId(),
-                jobPost.getOwnerId(),
                 jobPost.getTitle(),
                 jobPost.getDescription(),
                 jobPost.getImages().stream().map(JobPostImageResponse::from).toList(),
@@ -33,6 +32,7 @@ public record JobPostDetailResponse(
                 jobPost.getDeadline(),
                 jobPost.getRevisionLimit(),
                 jobPost.getStatus(),
+                owner,
                 jobPost.getCreatedAt()
         );
     }
