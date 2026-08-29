@@ -7,9 +7,12 @@ import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostDetailResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostRefineRequest;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostRefineResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateResponse;
+import com.sinchonthon.team5.odyssey.jobpost.llm.JobPostRefineService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +53,20 @@ import java.util.List;
 public class JobPostController {
 
     private final JobPostService jobPostService;
+    private final JobPostRefineService jobPostRefineService;
+
+    @PostMapping("/ai-refine")
+    @PreAuthorize("hasRole('OWNER')")
+    @Operation(summary = "AI 공고 정제", description = "사장님이 입력한 원문을 LLM으로 정제해 제목/설명/카테고리/예산/마감일 초안을 반환합니다.")
+    public ResponseEntity<ApiResponse<JobPostRefineResponse>> refine(
+            @Valid @RequestBody JobPostRefineRequest request
+    ) {
+        JobPostRefineResponse response = jobPostRefineService.refine(request.rawRequest());
+
+        return ResponseEntity
+                .status(JobPostSuccessCode.REFINED.getStatus())
+                .body(ApiResponse.onSuccess(JobPostSuccessCode.REFINED, response));
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "공고 등록", description = "사장님이 공고 정보와 선택 이미지를 multipart/form-data로 등록합니다.")
