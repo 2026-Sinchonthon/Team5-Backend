@@ -54,32 +54,100 @@ Authorization: Bearer {accessToken}
 
 ### RESPONSE
 
-#### 201 CREATED
+## 공통 응답 형식
+
+모든 API 응답은 다음 형식을 사용한다.
+
+| Name | Type | Description |
+|---|---|---|
+| `isSuccess` | Boolean | 요청 성공 여부 |
+| `code` | String | 서버 응답 코드 |
+| `message` | String | 응답 메시지 |
+| `result` | Object, Array, null | 성공 시 반환 데이터 |
+| `error` | Object, null | 실패 시 상세 오류 정보 |
+
+### 성공 응답
+
+반환 데이터가 있는 경우:
 
 ```json
 {
-  "success": true,
-  "code": 201,
-  "message": "학생 회원가입 성공",
-  "data": {
-    "memberId": 12,
-    "email": "student@yonsei.ac.kr",
-    "name": "김학생",
-    "role": "STUDENT"
+  "isSuccess": true,
+  "code": "COMMON_200",
+  "message": "요청이 성공적으로 처리되었습니다.",
+  "result": {
+    "id": 1
+  },
+  "error": null
+}
+```
+
+반환 데이터가 없는 경우:
+
+```json
+{
+  "isSuccess": true,
+  "code": "COMMON_200",
+  "message": "요청이 성공적으로 처리되었습니다.",
+  "result": null,
+  "error": null
+}
+```
+
+리소스 생성 성공:
+
+```json
+{
+  "isSuccess": true,
+  "code": "COMMON_201",
+  "message": "리소스가 생성되었습니다.",
+  "result": {
+    "id": 1
+  },
+  "error": null
+}
+```
+
+### 실패 응답
+
+일반적인 실패 응답:
+
+```json
+{
+  "isSuccess": false,
+  "code": "COMMON_404",
+  "message": "요청한 리소스를 찾을 수 없습니다.",
+  "result": null,
+  "error": null
+}
+```
+
+Validation 실패 응답:
+
+```json
+{
+  "isSuccess": false,
+  "code": "COMMON_400",
+  "message": "잘못된 요청입니다.",
+  "result": null,
+  "error": {
+    "message": "지원 메시지는 1000자 이하여야 합니다."
   }
 }
 ```
 
-#### 409 CONFLICT
+### 공통 응답 코드
 
-```json
-{
-  "success": false,
-  "code": 409,
-  "message": "이미 가입된 이메일입니다.",
-  "data": null
-}
-```
+| HTTP Status | Code | Description |
+|---|---|---|
+| `200 OK` | `COMMON_200` | 요청 처리 성공 |
+| `201 CREATED` | `COMMON_201` | 리소스 생성 성공 |
+| `400 BAD REQUEST` | `COMMON_400` | 잘못된 요청 또는 입력값 검증 실패 |
+| `401 UNAUTHORIZED` | `COMMON_401` | 인증 필요 또는 인증 실패 |
+| `403 FORBIDDEN` | `COMMON_403` | 접근 권한 없음 |
+| `404 NOT FOUND` | `COMMON_404` | 리소스를 찾을 수 없음 |
+| `405 METHOD NOT ALLOWED` | `COMMON_405` | 지원하지 않는 HTTP Method |
+| `500 INTERNAL SERVER ERROR` | `COMMON_500` | 서버 내부 오류 |
 
 ---
 
