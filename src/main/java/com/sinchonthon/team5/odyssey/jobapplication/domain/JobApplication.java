@@ -53,11 +53,13 @@ public class JobApplication {
     private JobApplication(
             Long jobPostId,
             Long studentId,
-            String message
+            String message,
+            String imageUrl
     ) {
         this.jobPostId = jobPostId;
         this.studentId = studentId;
         this.message = message;
+        this.imageUrl = imageUrl;
         this.status = JobApplicationStatus.PENDING;
     }
 
