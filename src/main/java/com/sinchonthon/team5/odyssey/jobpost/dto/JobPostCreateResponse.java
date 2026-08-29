@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 public record JobPostCreateResponse(
         Long jobPostId,
         String title,
+        String imageUrl,
         JobPostCategory category,
         Integer budget,
         OffsetDateTime deadline,
@@ -20,6 +21,7 @@ public record JobPostCreateResponse(
         return new JobPostCreateResponse(
                 jobPost.getId(),
                 jobPost.getTitle(),
+                jobPost.getImageUrl(),
                 jobPost.getCategory(),
                 jobPost.getBudget(),
                 jobPost.getDeadline(),

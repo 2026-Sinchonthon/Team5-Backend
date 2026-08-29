@@ -22,6 +22,9 @@ public record JobPostCreateRequest(
 
         String rawRequest,
 
+        @Size(max = 1000, message = "이미지 URL은 1000자 이하여야 합니다.")
+        String imageUrl,
+
         @NotNull(message = "카테고리는 필수입니다.")
         JobPostCategory category,
 

@@ -43,6 +43,9 @@ public class JobPost {
     @Column(name = "raw_request", columnDefinition = "TEXT")
     private String rawRequest;
 
+    @Column(name = "image_url", length = 1000)
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private JobPostCategory category;
@@ -73,6 +76,7 @@ public class JobPost {
             String title,
             String description,
             String rawRequest,
+            String imageUrl,
             JobPostCategory category,
             Integer budget,
             OffsetDateTime deadline,
@@ -82,6 +86,7 @@ public class JobPost {
         this.title = title;
         this.description = description;
         this.rawRequest = rawRequest;
+        this.imageUrl = imageUrl;
         this.category = category;
         this.budget = budget;
         this.deadline = deadline;
@@ -94,6 +99,7 @@ public class JobPost {
             String title,
             String description,
             String rawRequest,
+            String imageUrl,
             JobPostCategory category,
             Integer budget,
             OffsetDateTime deadline,
@@ -104,6 +110,7 @@ public class JobPost {
                 title,
                 description,
                 rawRequest,
+                imageUrl,
                 category,
                 budget,
                 deadline,
@@ -119,12 +126,21 @@ public class JobPost {
         return this.status == JobPostStatus.OPEN;
     }
 
-    public void update(String title, String description, Integer budget, OffsetDateTime deadline) {
+    public void update(
+            String title,
+            String description,
+            String imageUrl,
+            Integer budget,
+            OffsetDateTime deadline
+    ) {
         if (title != null) {
             this.title = title;
         }
         if (description != null) {
             this.description = description;
+        }
+        if (imageUrl != null) {
+            this.imageUrl = imageUrl;
         }
         if (budget != null) {
             this.budget = budget;

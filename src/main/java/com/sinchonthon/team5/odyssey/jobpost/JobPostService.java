@@ -37,6 +37,7 @@ public class JobPostService {
                 request.title(),
                 request.description(),
                 request.rawRequest(),
+                request.imageUrl(),
                 request.category(),
                 request.budget(),
                 request.deadline(),
@@ -74,7 +75,13 @@ public class JobPostService {
         validateOwner(jobPost, ownerId);
         validateEditable(jobPost);
 
-        jobPost.update(request.title(), request.description(), request.budget(), request.deadline());
+        jobPost.update(
+                request.title(),
+                request.description(),
+                request.imageUrl(),
+                request.budget(),
+                request.deadline()
+        );
 
         return JobPostUpdateResponse.from(jobPost);
     }

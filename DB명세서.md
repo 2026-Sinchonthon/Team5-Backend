@@ -165,6 +165,7 @@ LLM 공고 마법사를 사용할 경우 사장님의 원본 입력과 정제된
 | `title` | VARCHAR(150) | N | - | 공고 제목 |
 | `description` | TEXT | N | - | 공고 상세 내용 |
 | `raw_request` | TEXT | Y | - | LLM 정제 전 사장님 원본 요청 |
+| `image_url` | VARCHAR(1000) | Y | - | 공고 이미지 URL |
 | `category` | VARCHAR(30) | N | - | 카테고리 (`WEB`, `IMAGE`, `SNS`) |
 | `budget` | INT | N | - | 공고 예산 |
 | `deadline` | DATETIME | N | - | 작업 마감일 |

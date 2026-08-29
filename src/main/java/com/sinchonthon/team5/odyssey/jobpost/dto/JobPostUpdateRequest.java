@@ -13,6 +13,9 @@ public record JobPostUpdateRequest(
 
         String description,
 
+        @Size(max = 1000, message = "이미지 URL은 1000자 이하여야 합니다.")
+        String imageUrl,
+
         @Positive(message = "예산은 0보다 커야 합니다.")
         Integer budget,
 

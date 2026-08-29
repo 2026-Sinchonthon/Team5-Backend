@@ -429,6 +429,7 @@ OWNER 권한만 요청할 수 있다.
 | `title` | String | Y | 공고 제목 |
 | `description` | String | Y | 작업 상세 설명 |
 | `rawRequest` | String | N | LLM 정제 이전 요청 |
+| `imageUrl` | String | N | 공고 이미지 URL |
 | `category` | String | Y | `WEB`, `IMAGE`, `SNS` |
 | `budget` | Integer | Y | 예산 |
 | `deadline` | DateTime | Y | 작업 마감일 |
@@ -439,6 +440,7 @@ OWNER 권한만 요청할 수 있다.
   "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
   "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
   "rawRequest": "메뉴 사진이랑 릴스 찍어줄 학생 구함",
+  "imageUrl": "https://storage.example.com/job-posts/31.jpg",
   "category": "SNS",
   "budget": 300000,
   "deadline": "2026-09-05T23:59:59+09:00",
@@ -458,6 +460,7 @@ OWNER 권한만 요청할 수 있다.
   "data": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
+    "imageUrl": "https://storage.example.com/job-posts/31.jpg",
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
@@ -506,6 +509,7 @@ OWNER 권한만 요청할 수 있다.
         "jobPostId": 31,
         "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
         "businessName": "신촌 파스타",
+        "imageUrl": "https://storage.example.com/job-posts/31.jpg",
         "category": "SNS",
         "budget": 300000,
         "deadline": "2026-09-05T23:59:59+09:00",
@@ -546,6 +550,7 @@ OWNER 권한만 요청할 수 있다.
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
     "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
+    "imageUrl": "https://storage.example.com/job-posts/31.jpg",
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
@@ -616,6 +621,7 @@ OWNER 권한만 요청할 수 있다.
 {
   "title": "신촌 파스타 매장 릴스 콘텐츠 제작",
   "description": "메뉴 사진 10장 및 릴스 2건 제작",
+  "imageUrl": "https://storage.example.com/job-posts/31-v2.jpg",
   "budget": 350000,
   "deadline": "2026-09-07T23:59:59+09:00"
 }
@@ -633,6 +639,7 @@ OWNER 권한만 요청할 수 있다.
   "data": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 릴스 콘텐츠 제작",
+    "imageUrl": "https://storage.example.com/job-posts/31-v2.jpg",
     "budget": 350000,
     "deadline": "2026-09-07T23:59:59+09:00",
     "status": "OPEN"
