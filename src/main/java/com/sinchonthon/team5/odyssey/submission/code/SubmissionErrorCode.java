@@ -18,6 +18,11 @@ public enum SubmissionErrorCode implements BaseErrorCode {
             HttpStatus.CONFLICT,
             "SUBMISSION_409_3",
             "이미 수정 요청한 제출물입니다."
+    ),
+    DEADLINE_EXCEEDED(
+            HttpStatus.CONFLICT,
+            "SUBMISSION_409_4",
+            "결과물 제출 기한이 지났습니다."
     );
 
     private final HttpStatus status;
