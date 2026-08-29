@@ -36,7 +36,8 @@ public class JobApplicationService {
         JobApplication application = JobApplication.create(
                 jobPostId,
                 studentId,
-                request.message()
+                request.message(),
+                request.imageUrl()
         );
 
         JobApplication savedApplication =
