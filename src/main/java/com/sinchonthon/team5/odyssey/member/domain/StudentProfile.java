@@ -8,9 +8,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "student_profiles")
 public class StudentProfile {
 
@@ -38,8 +44,6 @@ public class StudentProfile {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected StudentProfile() {
-    }
 
     public StudentProfile(Member member, Long universityId, String major, String introduction) {
         this.member = member;

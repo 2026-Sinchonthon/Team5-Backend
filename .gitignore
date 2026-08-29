@@ -39,3 +39,5 @@ out/
 ### Local docs ###
 API_SPEC.md
 schema.sql
+
+.env
