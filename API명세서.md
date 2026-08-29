@@ -187,15 +187,16 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": true,
-  "code": 201,
-  "message": "사장님 회원가입 성공",
-  "data": {
+  "isSuccess": true,
+  "code": "COMMON_201",
+  "message": "리소스가 생성되었습니다.",
+  "result": {
     "memberId": 15,
     "email": "owner@example.com",
     "name": "박사장",
     "role": "OWNER"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -231,10 +232,10 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": true,
-  "code": 200,
-  "message": "로그인 성공",
-  "data": {
+  "isSuccess": true,
+  "code": "AUTH_200_1",
+  "message": "로그인에 성공했습니다.",
+  "result": {
     "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
     "tokenType": "Bearer",
     "member": {
@@ -242,7 +243,8 @@ Validation 실패 응답:
       "name": "김학생",
       "role": "STUDENT"
     }
-  }
+  },
+  "error": null
 }
 ```
 
@@ -250,10 +252,11 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": false,
-  "code": 401,
+  "isSuccess": false,
+  "code": "MEMBER_401_1",
   "message": "이메일 또는 비밀번호가 올바르지 않습니다.",
-  "data": null
+  "result": null,
+  "error": null
 }
 ```
 
@@ -277,10 +280,10 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "MEMBER_200_1",
   "message": "내 정보 조회 성공",
-  "data": {
+  "result": {
     "memberId": 12,
     "email": "student@yonsei.ac.kr",
     "name": "김학생",
@@ -292,7 +295,8 @@ Validation 실패 응답:
       "major": "컴퓨터과학과",
       "introduction": "웹 개발을 좋아하는 학생입니다."
     }
-  }
+  },
+  "error": null
 }
 ```
 
@@ -300,10 +304,10 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "MEMBER_200_1",
   "message": "내 정보 조회 성공",
-  "data": {
+  "result": {
     "memberId": 15,
     "email": "owner@example.com",
     "name": "박사장",
@@ -314,7 +318,8 @@ Validation 실패 응답:
       "address": "서울 서대문구 신촌로 00",
       "introduction": "신촌 파스타 전문점"
     }
-  }
+  },
+  "error": null
 }
 ```
 
@@ -336,10 +341,10 @@ Validation 실패 응답:
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "COMMON_200",
   "message": "대학교 목록 조회 성공",
-  "data": [
+  "result": [
     {
       "universityId": 1,
       "name": "연세대학교"
@@ -352,7 +357,8 @@ Validation 실패 응답:
       "universityId": 3,
       "name": "서강대학교"
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -390,17 +396,18 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "COMMON_200",
   "message": "공고 정제 성공",
-  "data": {
+  "result": {
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
     "description": "메뉴 사진 촬영 및 인스타그램 릴스 영상 제작을 요청합니다.",
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
     "rawRequest": "신촌 파스타집인데 인스타에 올릴 메뉴 사진이랑 릴스 찍어줄 학생 구함. 예산 30만원, 다음주까지"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -453,22 +460,31 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "JOBPOST_201",
   "message": "공고 등록 성공",
-  "data": {
+  "result": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
     "images": [
-      { "imageId": 101, "imageUrl": "https://storage.example.com/job-posts/31-1.jpg", "sortOrder": 0 },
-      { "imageId": 102, "imageUrl": "https://storage.example.com/job-posts/31-2.jpg", "sortOrder": 1 }
+      {
+        "imageId": 101,
+        "imageUrl": "https://storage.example.com/job-posts/31-1.jpg",
+        "sortOrder": 0
+      },
+      {
+        "imageId": 102,
+        "imageUrl": "https://storage.example.com/job-posts/31-2.jpg",
+        "sortOrder": 1
+      }
     ],
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
     "status": "OPEN",
     "createdAt": "2026-08-29T15:00:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -502,10 +518,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "JOBPOST_200_1",
   "message": "공고 목록 조회 성공",
-  "data": {
+  "result": {
     "content": [
       {
         "jobPostId": 31,
@@ -523,7 +539,8 @@ OWNER 권한만 요청할 수 있다.
     "size": 20,
     "totalElements": 35,
     "totalPages": 2
-  }
+  },
+  "error": null
 }
 ```
 
@@ -545,16 +562,24 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "JOBPOST_200_2",
   "message": "공고 상세 조회 성공",
-  "data": {
+  "result": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
     "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
     "images": [
-      { "imageId": 101, "imageUrl": "https://storage.example.com/job-posts/31-1.jpg", "sortOrder": 0 },
-      { "imageId": 102, "imageUrl": "https://storage.example.com/job-posts/31-2.jpg", "sortOrder": 1 }
+      {
+        "imageId": 101,
+        "imageUrl": "https://storage.example.com/job-posts/31-1.jpg",
+        "sortOrder": 0
+      },
+      {
+        "imageId": 102,
+        "imageUrl": "https://storage.example.com/job-posts/31-2.jpg",
+        "sortOrder": 1
+      }
     ],
     "category": "SNS",
     "budget": 300000,
@@ -567,7 +592,8 @@ OWNER 권한만 요청할 수 있다.
       "address": "서울 서대문구 신촌로 00"
     },
     "createdAt": "2026-08-29T15:00:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -591,10 +617,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "JOBPOST_200_3",
   "message": "내 공고 목록 조회 성공",
-  "data": [
+  "result": [
     {
       "jobPostId": 31,
       "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
@@ -605,7 +631,8 @@ OWNER 권한만 요청할 수 있다.
       "applicationCount": 4,
       "deadline": "2026-09-05T23:59:59+09:00"
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -638,16 +665,17 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "JOBPOST_200_4",
   "message": "공고 수정 성공",
-  "data": {
+  "result": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 릴스 콘텐츠 제작",
     "budget": 350000,
     "deadline": "2026-09-07T23:59:59+09:00",
     "status": "OPEN"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -703,14 +731,15 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "JOBPOST_201_2",
   "message": "공고 이미지 추가 성공",
-  "data": {
+  "result": {
     "imageId": 103,
     "imageUrl": "https://storage.example.com/job-posts/31-3.jpg",
     "sortOrder": 2
-  }
+  },
+  "error": null
 }
 ```
 
@@ -769,16 +798,17 @@ STUDENT 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "APPLICATION_201",
   "message": "공고 지원 성공",
-  "data": {
+  "result": {
     "applicationId": 51,
     "jobPostId": 31,
     "imageUrl": "https://storage.example.com/job-applications/portfolio.jpg",
     "status": "PENDING",
     "appliedAt": "2026-08-29T15:20:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -786,10 +816,11 @@ STUDENT 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": false,
-  "code": 409,
+  "isSuccess": false,
+  "code": "APPLICATION_409_1",
   "message": "이미 지원한 공고입니다.",
-  "data": null
+  "result": null,
+  "error": null
 }
 ```
 
@@ -811,10 +842,10 @@ STUDENT 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "APPLICATION_200_2",
   "message": "지원 목록 조회 성공",
-  "data": [
+  "result": [
     {
       "applicationId": 51,
       "jobPost": {
@@ -827,7 +858,8 @@ STUDENT 권한만 요청할 수 있다.
       "status": "PENDING",
       "appliedAt": "2026-08-29T15:20:00+09:00"
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -851,10 +883,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "APPLICATION_200_3",
   "message": "지원자 목록 조회 성공",
-  "data": [
+  "result": [
     {
       "applicationId": 51,
       "student": {
@@ -868,7 +900,8 @@ OWNER 권한만 요청할 수 있다.
       "status": "PENDING",
       "appliedAt": "2026-08-29T15:20:00+09:00"
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -892,13 +925,14 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "APPLICATION_200_1",
   "message": "지원 취소 성공",
-  "data": {
+  "result": {
     "applicationId": 51,
     "status": "CANCELED"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -940,10 +974,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "MATCHING_201",
   "message": "매칭 성공",
-  "data": {
+  "result": {
     "matchingId": 71,
     "jobPostId": 31,
     "applicationId": 51,
@@ -953,7 +987,8 @@ OWNER 권한만 요청할 수 있다.
     "revisionLimit": 4,
     "status": "IN_PROGRESS",
     "matchedAt": "2026-08-29T16:00:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -983,10 +1018,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "MATCHING_200_1",
   "message": "매칭 목록 조회 성공",
-  "data": [
+  "result": [
     {
       "matchingId": 71,
       "jobPost": {
@@ -1001,7 +1036,8 @@ OWNER 권한만 요청할 수 있다.
       "revisionLimit": 4,
       "status": "REVISION_REQUESTED"
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -1025,10 +1061,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "MATCHING_200_2",
   "message": "매칭 상세 조회 성공",
-  "data": {
+  "result": {
     "matchingId": 71,
     "jobPost": {
       "jobPostId": 31,
@@ -1051,7 +1087,8 @@ OWNER 권한만 요청할 수 있다.
     "revisionCount": 1,
     "revisionLimit": 4,
     "status": "REVISION_REQUESTED"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -1088,10 +1125,10 @@ STUDENT 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "SUBMISSION_201",
   "message": "결과물 제출 성공",
-  "data": {
+  "result": {
     "submissionId": 91,
     "matchingId": 71,
     "roundNumber": 1,
@@ -1110,7 +1147,8 @@ STUDENT 권한만 요청할 수 있다.
       }
     ],
     "submittedAt": "2026-09-03T13:00:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -1132,10 +1170,10 @@ STUDENT 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "SUBMISSION_200_1",
   "message": "제출 내역 조회 성공",
-  "data": [
+  "result": [
     {
       "submissionId": 91,
       "roundNumber": 1,
@@ -1157,7 +1195,8 @@ STUDENT 권한만 요청할 수 있다.
         "requestedAt": "2026-09-03T15:00:00+09:00"
       }
     }
-  ]
+  ],
+  "error": null
 }
 ```
 
@@ -1197,10 +1236,10 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": true,
-  "code": 201,
+  "isSuccess": true,
+  "code": "SUBMISSION_201_1",
   "message": "수정 요청 성공",
-  "data": {
+  "result": {
     "revisionRequestId": 111,
     "submissionId": 91,
     "reason": "메뉴명이 잘 보이지 않습니다. 글자 크기를 키우고 매장 로고를 우측 상단에 추가해주세요.",
@@ -1208,7 +1247,8 @@ OWNER 권한만 요청할 수 있다.
     "revisionLimit": 4,
     "remainingRevisionCount": 3,
     "requestedAt": "2026-09-03T15:00:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -1216,13 +1256,11 @@ OWNER 권한만 요청할 수 있다.
 
 ```json
 {
-  "success": false,
-  "code": 409,
+  "isSuccess": false,
+  "code": "SUBMISSION_409_2",
   "message": "수정 요청 가능 횟수를 모두 사용했습니다.",
-  "data": {
-    "revisionCount": 4,
-    "revisionLimit": 4
-  }
+  "result": null,
+  "error": null
 }
 ```
 
@@ -1252,16 +1290,17 @@ Request Body 없음.
 
 ```json
 {
-  "success": true,
-  "code": 200,
+  "isSuccess": true,
+  "code": "SUBMISSION_200_2",
   "message": "결과물 승인 성공",
-  "data": {
+  "result": {
     "submissionId": 93,
     "submissionStatus": "APPROVED",
     "matchingId": 71,
     "matchingStatus": "COMPLETED",
     "completedAt": "2026-09-05T17:30:00+09:00"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -1429,10 +1468,11 @@ MATCHED → COMPLETED
 
 ```json
 {
-  "success": false,
-  "code": 400,
+  "isSuccess": false,
+  "code": "COMMON_400",
   "message": "잘못된 요청입니다.",
-  "data": null
+  "result": null,
+  "error": null
 }
 ```
 
@@ -1440,10 +1480,11 @@ MATCHED → COMPLETED
 
 ```json
 {
-  "success": false,
-  "code": 401,
-  "message": "로그인이 필요합니다.",
-  "data": null
+  "isSuccess": false,
+  "code": "COMMON_401",
+  "message": "인증이 필요합니다.",
+  "result": null,
+  "error": null
 }
 ```
 
@@ -1451,10 +1492,11 @@ MATCHED → COMPLETED
 
 ```json
 {
-  "success": false,
-  "code": 403,
-  "message": "요청에 대한 권한이 없습니다.",
-  "data": null
+  "isSuccess": false,
+  "code": "COMMON_403",
+  "message": "접근 권한이 없습니다.",
+  "result": null,
+  "error": null
 }
 ```
 
@@ -1462,20 +1504,14 @@ MATCHED → COMPLETED
 
 ```json
 {
-  "success": false,
-  "code": 404,
-  "message": "요청한 데이터를 찾을 수 없습니다.",
-  "data": null
+  "isSuccess": false,
+  "code": "COMMON_404",
+  "message": "요청한 리소스를 찾을 수 없습니다.",
+  "result": null,
+  "error": null
 }
 ```
 
 ## 409 CONFLICT
 
-```json
-{
-  "success": false,
-  "code": 409,
-  "message": "현재 상태에서는 요청을 처리할 수 없습니다.",
-  "data": null
-}
-```
+409 응답은 공통 코드가 아닌 상황별 도메인 코드를 사용한다. 예: `JOBPOST_409`, `APPLICATION_409_1`, `MATCHING_409_1`, `SUBMISSION_409_1`.
