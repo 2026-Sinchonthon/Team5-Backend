@@ -5,6 +5,16 @@ import org.springframework.http.HttpStatus;
 
 public enum MatchingErrorCode implements BaseErrorCode {
 
+    NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "MATCHING_404",
+            "존재하지 않는 매칭입니다."
+    ),
+    FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "MATCHING_403",
+            "해당 매칭에 접근할 권한이 없습니다."
+    ),
     APPLICATION_NOT_PENDING(
             HttpStatus.CONFLICT,
             "MATCHING_409_1",

@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 
 public enum MatchingSuccessCode implements BaseSuccessCode {
 
-    CREATED(HttpStatus.CREATED, "MATCHING_201", "매칭 성공");
+    CREATED(HttpStatus.CREATED, "MATCHING_201", "매칭 성공"),
+    LIST_READ(HttpStatus.OK, "MATCHING_200_1", "매칭 목록 조회 성공"),
+    DETAIL_READ(HttpStatus.OK, "MATCHING_200_2", "매칭 상세 조회 성공");
 
     private final HttpStatus status;
     private final String code;

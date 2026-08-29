@@ -11,6 +11,10 @@ import com.sinchonthon.team5.odyssey.matching.MatchingErrorCode;
 import com.sinchonthon.team5.odyssey.matching.domain.Matching;
 import com.sinchonthon.team5.odyssey.matching.dto.MatchingAcceptRequest;
 import com.sinchonthon.team5.odyssey.matching.dto.MatchingCreateResponse;
+import com.sinchonthon.team5.odyssey.matching.dto.MatchingDetailResponse;
+import com.sinchonthon.team5.odyssey.matching.dto.MatchingSummaryResponse;
+import com.sinchonthon.team5.odyssey.matching.enums.MatchingStatus;
+import com.sinchonthon.team5.odyssey.matching.repository.MatchingDetailProjection;
 import com.sinchonthon.team5.odyssey.matching.repository.MatchingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,6 +74,33 @@ public class MatchingService {
         return MatchingCreateResponse.of(savedMatching, jobPost.getRevisionLimit());
     }
 
+    public List<MatchingSummaryResponse> getMyMatchings(
+            Long memberId,
+            MatchingStatus status
+    ) {
+        return matchingRepository
+                .findSummariesByMemberIdAndStatus(memberId, status)
+                .stream()
+                .map(MatchingSummaryResponse::from)
+                .toList();
+    }
+
+    public MatchingDetailResponse getDetail(
+            Long memberId,
+            Long matchingId
+    ) {
+        MatchingDetailProjection projection = matchingRepository
+                .findDetailById(matchingId)
+                .orElseThrow(() -> new GeneralException(MatchingErrorCode.NOT_FOUND));
+
+        validateParticipant(projection, memberId);
+
+        return MatchingDetailResponse.of(
+                projection,
+                resolveUniversityName(projection.getUniversityId())
+        );
+    }
+
     private JobApplication findApplicationOrThrow(Long applicationId) {
         return jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new GeneralException(JobApplicationErrorCode.NOT_FOUND));
@@ -90,5 +121,30 @@ public class MatchingService {
         if (!jobPost.isEditable() || matchingRepository.existsByJobPostId(jobPost.getId())) {
             throw new GeneralException(MatchingErrorCode.ALREADY_MATCHED);
         }
+    }
+
+    private void validateParticipant(
+            MatchingDetailProjection projection,
+            Long memberId
+    ) {
+        boolean isOwner = projection.getOwnerId().equals(memberId);
+        boolean isStudent = projection.getStudentId().equals(memberId);
+
+        if (!isOwner && !isStudent) {
+            throw new GeneralException(MatchingErrorCode.FORBIDDEN);
+        }
+    }
+
+    private String resolveUniversityName(Long universityId) {
+        if (universityId == null) {
+            return null;
+        }
+
+        return switch (universityId.intValue()) {
+            case 1 -> "연세대학교";
+            case 2 -> "이화여자대학교";
+            case 3 -> "서강대학교";
+            default -> "알 수 없는 대학교";
+        };
     }
 }
