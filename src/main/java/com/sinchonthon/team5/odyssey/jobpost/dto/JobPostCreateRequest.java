@@ -10,6 +10,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public record JobPostCreateRequest(
 
@@ -21,6 +22,9 @@ public record JobPostCreateRequest(
         String description,
 
         String rawRequest,
+
+        @Size(max = 10, message = "이미지는 최대 10장까지 등록할 수 있습니다.")
+        List<String> imageUrls,
 
         @NotNull(message = "카테고리는 필수입니다.")
         JobPostCategory category,
