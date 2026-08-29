@@ -427,6 +427,7 @@ OWNER 권한만 요청할 수 있다.
 | `title` | String | Y | 공고 제목 |
 | `description` | String | Y | 작업 상세 설명 |
 | `rawRequest` | String | N | LLM 정제 이전 요청 |
+| `imageUrls` | String[] | N | 공고 이미지 URL 목록, 최대 10장 |
 | `category` | String | Y | `WEB`, `IMAGE`, `SNS` |
 | `budget` | Integer | Y | 예산 |
 | `deadline` | DateTime | Y | 작업 마감일 |
@@ -437,6 +438,10 @@ OWNER 권한만 요청할 수 있다.
   "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
   "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
   "rawRequest": "메뉴 사진이랑 릴스 찍어줄 학생 구함",
+  "imageUrls": [
+    "https://storage.example.com/job-posts/31-1.jpg",
+    "https://storage.example.com/job-posts/31-2.jpg"
+  ],
   "category": "SNS",
   "budget": 300000,
   "deadline": "2026-09-05T23:59:59+09:00",
@@ -456,6 +461,10 @@ OWNER 권한만 요청할 수 있다.
   "data": {
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
+    "images": [
+      { "imageId": 101, "imageUrl": "https://storage.example.com/job-posts/31-1.jpg", "sortOrder": 0 },
+      { "imageId": 102, "imageUrl": "https://storage.example.com/job-posts/31-2.jpg", "sortOrder": 1 }
+    ],
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
@@ -504,6 +513,7 @@ OWNER 권한만 요청할 수 있다.
         "jobPostId": 31,
         "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
         "businessName": "신촌 파스타",
+        "thumbnailImageUrl": "https://storage.example.com/job-posts/31-1.jpg",
         "category": "SNS",
         "budget": 300000,
         "deadline": "2026-09-05T23:59:59+09:00",
@@ -544,6 +554,10 @@ OWNER 권한만 요청할 수 있다.
     "jobPostId": 31,
     "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
     "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
+    "images": [
+      { "imageId": 101, "imageUrl": "https://storage.example.com/job-posts/31-1.jpg", "sortOrder": 0 },
+      { "imageId": 102, "imageUrl": "https://storage.example.com/job-posts/31-2.jpg", "sortOrder": 1 }
+    ],
     "category": "SNS",
     "budget": 300000,
     "deadline": "2026-09-05T23:59:59+09:00",
@@ -586,6 +600,7 @@ OWNER 권한만 요청할 수 있다.
     {
       "jobPostId": 31,
       "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
+      "thumbnailImageUrl": "https://storage.example.com/job-posts/31-1.jpg",
       "category": "SNS",
       "budget": 300000,
       "status": "OPEN",
@@ -651,6 +666,71 @@ OWNER 권한만 요청할 수 있다.
 ### REQUEST
 
 `DELETE /api/v1/job-posts/{jobPostId}`
+
+### RESPONSE
+
+#### 204 NO CONTENT
+
+---
+
+## 4-7. 공고 이미지 추가
+
+### API 설명
+
+사장님이 자신이 등록한 공고에 이미지를 추가한다.
+
+매칭이 완료된 공고는 이미지를 추가할 수 없다.
+
+OWNER 권한만 요청할 수 있다.
+
+### REQUEST
+
+`POST /api/v1/job-posts/{jobPostId}/images`
+
+#### Request Body
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `imageUrl` | String | Y | 추가할 이미지 URL |
+
+```json
+{
+  "imageUrl": "https://storage.example.com/job-posts/31-3.jpg"
+}
+```
+
+### RESPONSE
+
+#### 201 CREATED
+
+```json
+{
+  "success": true,
+  "code": 201,
+  "message": "공고 이미지 추가 성공",
+  "data": {
+    "imageId": 103,
+    "imageUrl": "https://storage.example.com/job-posts/31-3.jpg",
+    "sortOrder": 2
+  }
+}
+```
+
+---
+
+## 4-8. 공고 이미지 삭제
+
+### API 설명
+
+사장님이 자신이 등록한 공고의 이미지를 삭제한다.
+
+매칭이 완료된 공고는 이미지를 삭제할 수 없다.
+
+OWNER 권한만 요청할 수 있다.
+
+### REQUEST
+
+`DELETE /api/v1/job-posts/{jobPostId}/images/{imageId}`
 
 ### RESPONSE
 
@@ -1263,6 +1343,8 @@ Request Body 없음.
 | GET | `/api/v1/job-posts/me` | OWNER | 내 공고 조회 |
 | PATCH | `/api/v1/job-posts/{jobPostId}` | OWNER | 공고 수정 |
 | DELETE | `/api/v1/job-posts/{jobPostId}` | OWNER | 공고 취소 |
+| POST | `/api/v1/job-posts/{jobPostId}/images` | OWNER | 공고 이미지 추가 |
+| DELETE | `/api/v1/job-posts/{jobPostId}/images/{imageId}` | OWNER | 공고 이미지 삭제 |
 | POST | `/api/v1/job-posts/{jobPostId}/applications` | STUDENT | 공고 지원 |
 | GET | `/api/v1/applications/me` | STUDENT | 내 지원 조회 |
 | GET | `/api/v1/job-posts/{jobPostId}/applications` | OWNER | 지원자 조회 |

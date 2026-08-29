@@ -5,12 +5,14 @@ import com.sinchonthon.team5.odyssey.jobpost.enums.JobPostCategory;
 import com.sinchonthon.team5.odyssey.jobpost.enums.JobPostStatus;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public record JobPostDetailResponse(
         Long jobPostId,
         Long ownerId,
         String title,
         String description,
+        List<JobPostImageResponse> images,
         JobPostCategory category,
         Integer budget,
         OffsetDateTime deadline,
@@ -25,6 +27,7 @@ public record JobPostDetailResponse(
                 jobPost.getOwnerId(),
                 jobPost.getTitle(),
                 jobPost.getDescription(),
+                jobPost.getImages().stream().map(JobPostImageResponse::from).toList(),
                 jobPost.getCategory(),
                 jobPost.getBudget(),
                 jobPost.getDeadline(),

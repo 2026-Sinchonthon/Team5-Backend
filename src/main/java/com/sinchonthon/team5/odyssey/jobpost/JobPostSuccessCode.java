@@ -10,7 +10,8 @@ public enum JobPostSuccessCode implements BaseSuccessCode {
     LIST_FOUND(HttpStatus.OK, "JOBPOST_200_1", "공고 목록 조회 성공"),
     DETAIL_FOUND(HttpStatus.OK, "JOBPOST_200_2", "공고 상세 조회 성공"),
     MY_LIST_FOUND(HttpStatus.OK, "JOBPOST_200_3", "내 공고 목록 조회 성공"),
-    UPDATED(HttpStatus.OK, "JOBPOST_200_4", "공고 수정 성공");
+    UPDATED(HttpStatus.OK, "JOBPOST_200_4", "공고 수정 성공"),
+    IMAGE_ADDED(HttpStatus.CREATED, "JOBPOST_201_2", "공고 이미지 추가 성공");
 
     private final HttpStatus status;
     private final String code;

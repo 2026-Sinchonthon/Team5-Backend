@@ -5,6 +5,8 @@ import com.sinchonthon.team5.odyssey.global.api.PageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostDetailResponse;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageAddRequest;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
@@ -100,6 +102,30 @@ public class JobPostController {
             @PathVariable Long jobPostId
     ) {
         jobPostService.cancel(ownerId, jobPostId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{jobPostId}/images")
+    public ResponseEntity<ApiResponse<JobPostImageResponse>> addImage(
+            @RequestHeader("X-Member-Id") Long ownerId,
+            @PathVariable Long jobPostId,
+            @Valid @RequestBody JobPostImageAddRequest request
+    ) {
+        JobPostImageResponse response = jobPostService.addImage(ownerId, jobPostId, request);
+
+        return ResponseEntity
+                .status(JobPostSuccessCode.IMAGE_ADDED.getStatus())
+                .body(ApiResponse.onSuccess(JobPostSuccessCode.IMAGE_ADDED, response));
+    }
+
+    @DeleteMapping("/{jobPostId}/images/{imageId}")
+    public ResponseEntity<Void> removeImage(
+            @RequestHeader("X-Member-Id") Long ownerId,
+            @PathVariable Long jobPostId,
+            @PathVariable Long imageId
+    ) {
+        jobPostService.removeImage(ownerId, jobPostId, imageId);
 
         return ResponseEntity.noContent().build();
     }

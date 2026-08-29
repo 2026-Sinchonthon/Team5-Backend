@@ -199,6 +199,8 @@ owner_id → members.id
 ```text
 members(OWNER) 1 : N job_posts
 
+job_posts 1 : N job_post_images
+
 job_posts 1 : N job_applications
 
 job_posts 1 : 0..1 matchings
@@ -206,7 +208,45 @@ job_posts 1 : 0..1 matchings
 
 ---
 
-# 6. `job_applications`
+# 6. `job_post_images`
+
+### 테이블 설명
+
+공고에 첨부된 이미지를 저장한다.
+
+하나의 공고는 여러 장의 이미지를 가질 수 있으며 `sort_order`로 노출 순서를 관리한다.
+
+### Columns
+
+| Column | Type | Null | Default | Description |
+|---|---|---|---|---|
+| `id` | BIGINT | N | - | 공고 이미지 PK |
+| `job_post_id` | BIGINT | N | - | 이미지가 속한 공고 ID |
+| `image_url` | VARCHAR(1000) | N | - | 이미지 접근 URL |
+| `sort_order` | INT | N | `0` | 노출 순서 |
+| `created_at` | DATETIME | N | `CURRENT_TIMESTAMP` | 이미지 등록일 |
+
+### Primary Key
+
+```text
+PK_JOB_POST_IMAGES (id)
+```
+
+### 권장 Foreign Key
+
+```text
+job_post_id → job_posts.id
+```
+
+### 관계
+
+```text
+job_posts 1 : N job_post_images
+```
+
+---
+
+# 7. `job_applications`
 
 ### 테이블 설명
 
@@ -268,7 +308,7 @@ job_applications 1 : 0..1 matchings
 
 ---
 
-# 7. `matchings`
+# 8. `matchings`
 
 ### 테이블 설명
 
@@ -340,7 +380,7 @@ matchings 1 : N submissions
 
 ---
 
-# 8. `submissions`
+# 9. `submissions`
 
 ### 테이블 설명
 
@@ -399,7 +439,7 @@ submissions 1 : 0..1 revision_requests
 
 ---
 
-# 9. `submission_files`
+# 10. `submission_files`
 
 ### 테이블 설명
 
@@ -439,7 +479,7 @@ submissions 1 : N submission_files
 
 ---
 
-# 10. `revision_requests`
+# 11. `revision_requests`
 
 ### 테이블 설명
 
@@ -484,7 +524,7 @@ submissions 1 : 0..1 revision_requests
 
 ---
 
-# 11. 전체 테이블 관계
+# 12. 전체 테이블 관계
 
 ```text
 members
@@ -501,7 +541,7 @@ members (OWNER)
      │
      │ 1 : N
      ▼
- job_posts
+ job_posts ──── 1 : N ──── job_post_images
      │
      │ 1 : N
      ▼
@@ -524,7 +564,7 @@ submission_files  revision_requests
 
 ---
 
-# 12. 테이블 요약
+# 13. 테이블 요약
 
 | Table | Description |
 |---|---|
@@ -533,6 +573,7 @@ submission_files  revision_requests
 | `owner_profiles` | 사장님 및 매장 프로필 |
 | `universities` | 대학 정보 |
 | `job_posts` | 사장님 외주 공고 |
+| `job_post_images` | 공고 첨부 이미지 |
 | `job_applications` | 학생 공고 지원 |
 | `matchings` | 사장님-학생 최종 매칭 |
 | `submissions` | 학생 결과물 제출 |
@@ -541,7 +582,7 @@ submission_files  revision_requests
 
 ---
 
-# 13. 주요 업무 흐름과 DB 변화
+# 14. 주요 업무 흐름과 DB 변화
 
 ## 공고 등록
 
@@ -642,7 +683,7 @@ completed_at 기록
 
 ---
 
-# 14. 현재 DB 기준 추가 권장 Constraint
+# 15. 현재 DB 기준 추가 권장 Constraint
 
 현재 SQL에는 일부 FK만 정의되어 있으므로 아래 FK 추가를 권장한다.
 
@@ -651,6 +692,11 @@ ALTER TABLE job_posts
 ADD CONSTRAINT FK_JOB_POST_OWNER
 FOREIGN KEY (owner_id)
 REFERENCES members(id);
+
+ALTER TABLE job_post_images
+ADD CONSTRAINT FK_JOB_POST_IMAGE
+FOREIGN KEY (job_post_id)
+REFERENCES job_posts(id);
 
 ALTER TABLE job_applications
 ADD CONSTRAINT FK_APPLICATION_JOB_POST
@@ -719,7 +765,7 @@ UNIQUE (submission_id);
 
 ---
 
-# 15. 현재 기획 대비 미구현 DB 영역
+# 16. 현재 기획 대비 미구현 DB 영역
 
 현재 DB는 MVP의 **공고 → 지원 → 매칭 → 결과물 제출 → 수정 요청 → 완료** 흐름을 표현한다.
 
