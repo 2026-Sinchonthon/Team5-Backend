@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +25,6 @@ class JobPostRefineParser {
     private static final Pattern SAME_DAY_WORK_PATTERN =
             Pattern.compile("오늘.{0,80}(완료|완성|제작|구현|작성|업데이트|제공)");
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d[\\d,]*");
-    private static final Pattern MAN_WON_PATTERN = Pattern.compile("(\\d+)\\s*만\\s*원");
-    private static final Pattern WON_PATTERN = Pattern.compile("(\\d[\\d,]*)\\s*원");
 
     private final OllamaClient ollamaClient;
     private final ObjectMapper objectMapper;
@@ -43,48 +40,16 @@ class JobPostRefineParser {
         this.reviewModel = reviewModel;
     }
 
-    JobPostCategory classifyCategory(String rawText) {
-        try {
-            String raw = ollamaClient.chatJson(JobPostRefinePrompts.buildCategoryMessages(rawText));
-            JsonNode node = extractJson(raw);
-            String value = node.path("category").asText("");
-            return JobPostCategory.valueOf(value.trim().toUpperCase());
-        } catch (Exception exception) {
-            return inferCategoryByKeyword(rawText);
-        }
-    }
-
-    private JobPostCategory inferCategoryByKeyword(String rawText) {
-        String text = rawText.toLowerCase();
-        if (text.contains("인스타") || text.contains("릴스") || text.contains("스토리") || text.contains("sns")) {
-            return JobPostCategory.SNS;
-        }
-        if (text.contains("로고") || text.contains("포스터") || text.contains("메뉴판")
-                || text.contains("배너") || text.contains("전단") || text.contains("디자인")) {
-            return JobPostCategory.IMAGE;
-        }
-        return JobPostCategory.WEB;
-    }
-
     JobPostRefineResult parse(String rawText, JobPostCategory category) {
         try {
             String raw = ollamaClient.chatJson(JobPostRefinePrompts.buildMessages(rawText, category));
             JobPostRefineResult result = normalize(extractJson(raw), category);
 
             if (result.title().isBlank()) {
-                result = new JobPostRefineResult(
-                        category, fallbackParse(rawText, category).title(),
-                        result.refinedDescription(), result.budgetText(), result.deadlineText(), true
-                );
+                result = new JobPostRefineResult(category, fallbackParse(rawText, category).title(), result.refinedDescription(), true);
             }
             if (result.refinedDescription().isBlank()) {
-                result = new JobPostRefineResult(
-                        category, result.title(), rawText.strip(),
-                        result.budgetText(), result.deadlineText(), true
-                );
-            }
-            if (result.budgetText().isBlank() || result.budgetText().equals("협의")) {
-                result = result.withBudgetDeadline(extractBudgetText(rawText), result.deadlineText());
+                result = new JobPostRefineResult(category, result.title(), rawText.strip(), true);
             }
 
             List<JobPostRefineResult> candidates = new ArrayList<>();
@@ -96,7 +61,7 @@ class JobPostRefineParser {
                 );
                 JobPostRefineResult reviewed = normalize(extractJson(reviewedRaw), category);
                 if (!reviewed.title().isBlank() && !reviewed.refinedDescription().isBlank()) {
-                    candidates.add(reviewed.withBudgetDeadline(result.budgetText(), result.deadlineText()));
+                    candidates.add(reviewed);
                 }
             } catch (Exception ignored) {
                 // 검수 실패 시 1차 결과를 그대로 사용
@@ -111,7 +76,7 @@ class JobPostRefineParser {
                     );
                     JobPostRefineResult strict = normalize(extractJson(strictRaw), category);
                     if (!strict.title().isBlank() && !strict.refinedDescription().isBlank()) {
-                        candidates.add(strict.withBudgetDeadline(safest.budgetText(), safest.deadlineText()));
+                        candidates.add(strict);
                     }
                 } catch (Exception ignored) {
                     // 엄격 검수 실패 시 이전 후보 유지
@@ -146,9 +111,7 @@ class JobPostRefineParser {
     private JobPostRefineResult normalize(JsonNode node, JobPostCategory category) {
         String title = limitTitle(firstNonBlank(node, "title", "summary"));
         String refined = firstNonBlank(node, "refined_description", "description");
-        String budget = textOrDefault(node.path("budget"), "협의");
-        String deadline = textOrDefault(node.path("deadline"), "협의");
-        return new JobPostRefineResult(category, title, refined, budget, deadline, true);
+        return new JobPostRefineResult(category, title, refined, true);
     }
 
     private String firstNonBlank(JsonNode node, String... fields) {
@@ -159,11 +122,6 @@ class JobPostRefineParser {
             }
         }
         return "";
-    }
-
-    private String textOrDefault(JsonNode node, String defaultValue) {
-        String value = node.asText("").strip();
-        return value.isBlank() ? defaultValue : value;
     }
 
     private String limitTitle(String value) {
@@ -272,8 +230,6 @@ class JobPostRefineParser {
                 category,
                 title.isBlank() ? "요청 내용 확인" : title,
                 "요청 내용은 다음과 같습니다. " + rawText.strip(),
-                candidate.budgetText(),
-                candidate.deadlineText(),
                 true
         );
     }
@@ -295,20 +251,6 @@ class JobPostRefineParser {
         }
     }
 
-    private String extractBudgetText(String text) {
-        Matcher manWon = MAN_WON_PATTERN.matcher(text);
-        if (manWon.find()) {
-            long amount = Long.parseLong(manWon.group(1)) * 10000;
-            return "%,d원".formatted(amount);
-        }
-        Matcher won = WON_PATTERN.matcher(text);
-        if (won.find()) {
-            long amount = Long.parseLong(won.group(1).replace(",", ""));
-            return "%,d원".formatted(amount);
-        }
-        return "협의";
-    }
-
     JobPostRefineResult fallbackParse(String rawText, JobPostCategory category) {
         String stripped = rawText.strip();
         String title = stripped.isBlank()
@@ -319,18 +261,6 @@ class JobPostRefineParser {
         String description = "원본 요청을 확인해 필요한 산출물과 조건을 정리해야 합니다. "
                 + (stripped.isBlank() ? "구체적인 요구사항이 제공되지 않았습니다." : stripped);
 
-        return new JobPostRefineResult(category, title, description, extractBudgetText(rawText), "협의", false);
-    }
-
-    Integer parseBudgetAmount(String budgetText) {
-        Matcher matcher = Pattern.compile("\\d[\\d,]*").matcher(budgetText);
-        if (matcher.find()) {
-            try {
-                return Integer.parseInt(matcher.group().replace(",", ""));
-            } catch (NumberFormatException exception) {
-                return null;
-            }
-        }
-        return null;
+        return new JobPostRefineResult(category, title, description, false);
     }
 }

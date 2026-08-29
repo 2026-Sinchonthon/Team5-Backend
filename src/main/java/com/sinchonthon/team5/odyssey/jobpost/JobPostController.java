@@ -61,7 +61,7 @@ public class JobPostController {
     public ResponseEntity<ApiResponse<JobPostRefineResponse>> refine(
             @Valid @RequestBody JobPostRefineRequest request
     ) {
-        JobPostRefineResponse response = jobPostRefineService.refine(request.rawRequest());
+        JobPostRefineResponse response = jobPostRefineService.refine(request.rawRequest(), request.category());
 
         return ResponseEntity
                 .status(JobPostSuccessCode.REFINED.getStatus())

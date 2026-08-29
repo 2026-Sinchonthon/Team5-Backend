@@ -6,12 +6,6 @@ record JobPostRefineResult(
         JobPostCategory category,
         String title,
         String refinedDescription,
-        String budgetText,
-        String deadlineText,
         boolean parsedByLlm
 ) {
-
-    JobPostRefineResult withBudgetDeadline(String budgetText, String deadlineText) {
-        return new JobPostRefineResult(category, title, refinedDescription, budgetText, deadlineText, parsedByLlm);
-    }
 }
