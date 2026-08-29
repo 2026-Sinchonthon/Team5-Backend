@@ -37,7 +37,7 @@ public class JobApplication {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 30)
     private JobApplicationStatus status;
 
     @CreationTimestamp
@@ -68,5 +68,27 @@ public class JobApplication {
                 studentId,
                 message
         );
+    }
+
+    public boolean isPending() {
+        return status == JobApplicationStatus.PENDING;
+    }
+
+    public boolean isAppliedBy(Long studentId) {
+        return this.studentId.equals(studentId);
+    }
+
+    public void cancel() {
+        this.status = JobApplicationStatus.CANCELED;
+    }
+
+    public void accept() {
+        this.status = JobApplicationStatus.ACCEPTED;
+        this.decidedAt = OffsetDateTime.now();
+    }
+
+    public void reject() {
+        this.status = JobApplicationStatus.REJECTED;
+        this.decidedAt = OffsetDateTime.now();
     }
 }
