@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -30,10 +30,11 @@ public class JobApplicationController {
 
     @PostMapping("/job-posts/{jobPostId}/applications")
     public ResponseEntity<ApiResponse<ApplicationCreateResponse>> apply(
-            @RequestHeader("X-Member-Id") Long studentId,
+            Principal principal,
             @PathVariable Long jobPostId,
             @Valid @RequestBody ApplicationCreateRequest request
     ) {
+        Long studentId = getMemberId(principal);
         ApplicationCreateResponse response =
                 jobApplicationService.apply(
                         studentId,
@@ -51,9 +52,10 @@ public class JobApplicationController {
 
     @PostMapping("/applications/{applicationId}/cancel")
     public ResponseEntity<ApiResponse<ApplicationCancelResponse>> cancel(
-            @RequestHeader("X-Member-Id") Long studentId,
+            Principal principal,
             @PathVariable Long applicationId
     ) {
+        Long studentId = getMemberId(principal);
         ApplicationCancelResponse response =
                 jobApplicationService.cancel(
                         studentId,
@@ -70,8 +72,9 @@ public class JobApplicationController {
 
     @GetMapping("/applications/me")
     public ResponseEntity<ApiResponse<List<ApplicationSummaryResponse>>> getMyApplications(
-            @RequestHeader("X-Member-Id") Long studentId
+            Principal principal
     ) {
+        Long studentId = getMemberId(principal);
         List<ApplicationSummaryResponse> response =
                 jobApplicationService.getMyApplications(studentId);
 
@@ -85,9 +88,10 @@ public class JobApplicationController {
 
     @GetMapping("/job-posts/{jobPostId}/applications")
     public ResponseEntity<ApiResponse<List<ApplicantResponse>>> getApplicants(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long jobPostId
     ) {
+        Long ownerId = getMemberId(principal);
         List<ApplicantResponse> response =
                 jobApplicationService.getApplicants(ownerId, jobPostId);
 
@@ -97,5 +101,9 @@ public class JobApplicationController {
                         JobApplicationSuccessCode.APPLICANTS_READ,
                         response
                 ));
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Long.valueOf(principal.getName());
     }
 }

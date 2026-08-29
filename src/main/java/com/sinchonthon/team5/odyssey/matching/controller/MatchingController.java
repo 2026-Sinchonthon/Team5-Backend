@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -31,10 +31,11 @@ public class MatchingController {
 
     @PostMapping("/applications/{applicationId}/accept")
     public ResponseEntity<ApiResponse<MatchingCreateResponse>> accept(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long applicationId,
             @Valid @RequestBody MatchingAcceptRequest request
     ) {
+        Long ownerId = getMemberId(principal);
         MatchingCreateResponse response =
                 matchingService.accept(ownerId, applicationId, request);
 
@@ -45,9 +46,10 @@ public class MatchingController {
 
     @GetMapping("/matchings/me")
     public ResponseEntity<ApiResponse<List<MatchingSummaryResponse>>> getMyMatchings(
-            @RequestHeader("X-Member-Id") Long memberId,
+            Principal principal,
             @RequestParam(required = false) MatchingStatus status
     ) {
+        Long memberId = getMemberId(principal);
         List<MatchingSummaryResponse> response =
                 matchingService.getMyMatchings(memberId, status);
 
@@ -58,14 +60,19 @@ public class MatchingController {
 
     @GetMapping("/matchings/{matchingId}")
     public ResponseEntity<ApiResponse<MatchingDetailResponse>> getDetail(
-            @RequestHeader("X-Member-Id") Long memberId,
+            Principal principal,
             @PathVariable Long matchingId
     ) {
+        Long memberId = getMemberId(principal);
         MatchingDetailResponse response =
                 matchingService.getDetail(memberId, matchingId);
 
         return ResponseEntity
                 .status(MatchingSuccessCode.DETAIL_READ.getStatus())
                 .body(ApiResponse.onSuccess(MatchingSuccessCode.DETAIL_READ, response));
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Long.valueOf(principal.getName());
     }
 }
