@@ -3,6 +3,7 @@ package com.sinchonthon.team5.odyssey.jobapplication.controller;
 import com.sinchonthon.team5.odyssey.global.api.ApiResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.JobApplicationSuccessCode;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCancelResponse;
+import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCreateJsonRequest;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCreateResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicantResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationSummaryResponse;
@@ -10,6 +11,7 @@ import com.sinchonthon.team5.odyssey.jobapplication.service.JobApplicationServic
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,6 +63,34 @@ public class JobApplicationController {
                         jobPostId,
                         message,
                         image
+                );
+
+        return ResponseEntity
+                .status(JobApplicationSuccessCode.CREATED.getStatus())
+                .body(ApiResponse.onSuccess(
+                        JobApplicationSuccessCode.CREATED,
+                        response
+                ));
+    }
+
+    @PostMapping(
+            value = "/job-posts/{jobPostId}/applications",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "공고 지원(JSON)", description = "학생이 이미지 첨부 없이 자기소개만으로 공고에 지원합니다. STUDENT 권한이 필요합니다.")
+    public ResponseEntity<ApiResponse<ApplicationCreateResponse>> applyJson(
+            Principal principal,
+            @PathVariable Long jobPostId,
+            @Valid @RequestBody ApplicationCreateJsonRequest request
+    ) {
+        Long studentId = getMemberId(principal);
+        ApplicationCreateResponse response =
+                jobApplicationService.apply(
+                        studentId,
+                        jobPostId,
+                        request.message(),
+                        null
                 );
 
         return ResponseEntity

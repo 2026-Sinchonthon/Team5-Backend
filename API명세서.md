@@ -779,11 +779,9 @@ STUDENT 권한만 요청할 수 있다.
 
 `POST /api/v1/job-posts/{jobPostId}/applications`
 
-#### Content-Type
+이미지 첨부가 필요하면 `multipart/form-data`, 텍스트만 보낼 때는 `application/json` 둘 다 지원한다.
 
-`multipart/form-data`
-
-#### Request Parts
+#### Content-Type: `multipart/form-data`
 
 | Name | Type | Required | Description |
 |---|---|---|---|
@@ -791,6 +789,18 @@ STUDENT 권한만 요청할 수 있다.
 | `image` | File | N | 지원서 첨부 이미지 |
 
 백엔드는 `image` 파일이 있으면 S3에 업로드한 뒤 반환된 URL을 `job_applications.image_url`에 저장한다.
+
+#### Content-Type: `application/json`
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `message` | String | Y | 이력 설명 및 자기소개, 최대 1000자 |
+
+```json
+{
+  "message": "인스타그램 콘텐츠 제작 경험이 있습니다."
+}
+```
 
 ### RESPONSE
 
