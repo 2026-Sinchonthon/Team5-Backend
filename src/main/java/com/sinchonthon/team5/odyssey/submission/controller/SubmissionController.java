@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,7 @@ public class SubmissionController {
             value = "/matchings/{matchingId}/submissions",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<SubmissionCreateResponse>> submit(
             Principal principal,
             @PathVariable Long matchingId,
@@ -74,6 +76,7 @@ public class SubmissionController {
     }
 
     @PostMapping("/submissions/{submissionId}/revision-requests")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<RevisionRequestCreateResponse>> requestRevision(
             Principal principal,
             @PathVariable Long submissionId,
@@ -94,6 +97,7 @@ public class SubmissionController {
     }
 
     @PostMapping("/submissions/{submissionId}/approve")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<SubmissionApproveResponse>> approve(
             Principal principal,
             @PathVariable Long submissionId
