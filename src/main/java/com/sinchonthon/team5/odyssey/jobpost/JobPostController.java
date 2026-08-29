@@ -13,12 +13,13 @@ import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateResponse;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/job-posts")
 @RequiredArgsConstructor
+@Validated
 public class JobPostController {
 
     private final JobPostService jobPostService;
@@ -54,9 +57,10 @@ public class JobPostController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<JobPostListItemResponse>>> getList(
             @ModelAttribute JobPostSearchCondition condition,
-            @PageableDefault(size = 20) Pageable pageable
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
-        PageResponse<JobPostListItemResponse> response = jobPostService.getList(condition, pageable);
+        PageResponse<JobPostListItemResponse> response = jobPostService.getList(condition, page, size);
 
         return ResponseEntity
                 .status(JobPostSuccessCode.LIST_FOUND.getStatus())
