@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 public record ApplicationCreateResponse(
         Long applicationId,
         Long jobPostId,
+        String imageUrl,
         JobApplicationStatus status,
         OffsetDateTime appliedAt
 ) {

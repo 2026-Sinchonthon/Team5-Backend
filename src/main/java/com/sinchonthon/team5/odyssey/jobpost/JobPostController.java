@@ -5,7 +5,6 @@ import com.sinchonthon.team5.odyssey.global.api.PageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostDetailResponse;
-import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageAddRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
@@ -15,10 +14,12 @@ import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -42,13 +45,16 @@ public class JobPostController {
 
     private final JobPostService jobPostService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<JobPostCreateResponse>> create(
             Principal principal,
-            @Valid @RequestBody JobPostCreateRequest request
+            @Valid @RequestPart("request") JobPostCreateRequest request,
+            @RequestPart(value = "images", required = false)
+            @Size(max = JobPost.MAX_IMAGE_COUNT, message = "이미지는 최대 10장까지 등록할 수 있습니다.")
+            List<MultipartFile> images
     ) {
         Long ownerId = getMemberId(principal);
-        JobPostCreateResponse response = jobPostService.create(ownerId, request);
+        JobPostCreateResponse response = jobPostService.create(ownerId, request, images);
 
         return ResponseEntity
                 .status(JobPostSuccessCode.CREATED.getStatus())
@@ -114,14 +120,17 @@ public class JobPostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{jobPostId}/images")
+    @PostMapping(
+            value = "/{jobPostId}/images",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<ApiResponse<JobPostImageResponse>> addImage(
             Principal principal,
             @PathVariable Long jobPostId,
-            @Valid @RequestBody JobPostImageAddRequest request
+            @RequestPart("image") MultipartFile image
     ) {
         Long ownerId = getMemberId(principal);
-        JobPostImageResponse response = jobPostService.addImage(ownerId, jobPostId, request);
+        JobPostImageResponse response = jobPostService.addImage(ownerId, jobPostId, image);
 
         return ResponseEntity
                 .status(JobPostSuccessCode.IMAGE_ADDED.getStatus())
