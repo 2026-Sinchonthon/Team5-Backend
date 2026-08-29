@@ -81,4 +81,31 @@ public class Matching {
     ) {
         return new Matching(jobPostId, applicationId, agreedAmount, deadline);
     }
+
+    public boolean canSubmit() {
+        return status == MatchingStatus.IN_PROGRESS
+                || status == MatchingStatus.REVISION_REQUESTED;
+    }
+
+    public boolean isSubmitted() {
+        return status == MatchingStatus.SUBMITTED;
+    }
+
+    public boolean canRequestRevision(Integer revisionLimit) {
+        return revisionCount < revisionLimit;
+    }
+
+    public void submit() {
+        this.status = MatchingStatus.SUBMITTED;
+    }
+
+    public void requestRevision() {
+        this.revisionCount++;
+        this.status = MatchingStatus.REVISION_REQUESTED;
+    }
+
+    public void complete() {
+        this.status = MatchingStatus.COMPLETED;
+        this.completedAt = OffsetDateTime.now();
+    }
 }

@@ -4,6 +4,9 @@ import com.sinchonthon.team5.odyssey.matching.domain.Matching;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Lock;
+
+import jakarta.persistence.LockModeType;
 
 import com.sinchonthon.team5.odyssey.matching.enums.MatchingStatus;
 
@@ -68,4 +71,8 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
     Optional<MatchingDetailProjection> findDetailById(
             @Param("matchingId") Long matchingId
     );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Matching m where m.id = :matchingId")
+    Optional<Matching> findByIdForUpdate(@Param("matchingId") Long matchingId);
 }

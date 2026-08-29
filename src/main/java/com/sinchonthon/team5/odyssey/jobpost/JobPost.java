@@ -162,6 +162,10 @@ public class JobPost {
         this.status = JobPostStatus.MATCHED;
     }
 
+    public void complete() {
+        this.status = JobPostStatus.COMPLETED;
+    }
+
     public boolean canAddImage() {
         return images.size() < MAX_IMAGE_COUNT;
     }
