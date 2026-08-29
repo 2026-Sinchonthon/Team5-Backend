@@ -7,6 +7,9 @@ import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCreateRespons
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicantResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationSummaryResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.service.JobApplicationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,8 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "공고 지원", description = "학생 지원 및 사장님 지원자 관리 API")
+@SecurityRequirement(name = "bearerAuth")
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
@@ -38,6 +43,7 @@ public class JobApplicationController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "공고 지원", description = "학생이 공고에 자기소개와 선택 이미지를 첨부해 지원합니다. STUDENT 권한이 필요합니다.")
     public ResponseEntity<ApiResponse<ApplicationCreateResponse>> apply(
             Principal principal,
             @PathVariable Long jobPostId,
@@ -66,6 +72,7 @@ public class JobApplicationController {
 
     @PostMapping("/applications/{applicationId}/cancel")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "지원 취소", description = "학생이 본인의 대기 중인 지원을 취소합니다.")
     public ResponseEntity<ApiResponse<ApplicationCancelResponse>> cancel(
             Principal principal,
             @PathVariable Long applicationId
@@ -87,6 +94,7 @@ public class JobApplicationController {
 
     @GetMapping("/applications/me")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "내 지원 목록 조회", description = "학생이 지원한 공고 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<List<ApplicationSummaryResponse>>> getMyApplications(
             Principal principal
     ) {
@@ -104,6 +112,7 @@ public class JobApplicationController {
 
     @GetMapping("/job-posts/{jobPostId}/applications")
     @PreAuthorize("hasRole('OWNER')")
+    @Operation(summary = "공고 지원자 목록 조회", description = "사장님이 본인 공고의 지원자를 조회합니다.")
     public ResponseEntity<ApiResponse<List<ApplicantResponse>>> getApplicants(
             Principal principal,
             @PathVariable Long jobPostId

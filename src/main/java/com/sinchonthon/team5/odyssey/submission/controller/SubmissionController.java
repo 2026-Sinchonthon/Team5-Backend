@@ -8,6 +8,9 @@ import com.sinchonthon.team5.odyssey.submission.dto.SubmissionApproveResponse;
 import com.sinchonthon.team5.odyssey.submission.dto.SubmissionCreateResponse;
 import com.sinchonthon.team5.odyssey.submission.dto.SubmissionHistoryResponse;
 import com.sinchonthon.team5.odyssey.submission.service.SubmissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Tag(name = "결과물 / 수정 요청", description = "결과물 제출, 수정 요청 및 승인 API")
+@SecurityRequirement(name = "bearerAuth")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -40,6 +45,7 @@ public class SubmissionController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "결과물 제출", description = "학생이 매칭된 작업의 결과물 파일을 제출합니다. STUDENT 권한이 필요합니다.")
     public ResponseEntity<ApiResponse<SubmissionCreateResponse>> submit(
             Principal principal,
             @PathVariable Long matchingId,
@@ -61,6 +67,7 @@ public class SubmissionController {
     }
 
     @GetMapping("/matchings/{matchingId}/submissions")
+    @Operation(summary = "결과물 제출 이력 조회", description = "매칭 참여자가 해당 매칭의 결과물 제출 이력을 조회합니다.")
     public ResponseEntity<ApiResponse<List<SubmissionHistoryResponse>>> getHistory(
             Principal principal,
             @PathVariable Long matchingId
@@ -77,6 +84,7 @@ public class SubmissionController {
 
     @PostMapping("/submissions/{submissionId}/revision-requests")
     @PreAuthorize("hasRole('OWNER')")
+    @Operation(summary = "수정 요청", description = "사장님이 제출된 결과물에 수정 요청을 생성합니다. OWNER 권한이 필요합니다.")
     public ResponseEntity<ApiResponse<RevisionRequestCreateResponse>> requestRevision(
             Principal principal,
             @PathVariable Long submissionId,
@@ -98,6 +106,7 @@ public class SubmissionController {
 
     @PostMapping("/submissions/{submissionId}/approve")
     @PreAuthorize("hasRole('OWNER')")
+    @Operation(summary = "결과물 최종 승인", description = "사장님이 결과물을 최종 승인해 매칭을 완료합니다. OWNER 권한이 필요합니다.")
     public ResponseEntity<ApiResponse<SubmissionApproveResponse>> approve(
             Principal principal,
             @PathVariable Long submissionId
