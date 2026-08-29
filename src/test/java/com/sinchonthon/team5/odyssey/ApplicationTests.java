@@ -1,4 +1,4 @@
-package sinchonton_team5._dyssey;
+package com.sinchonthon.team5.odyssey;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
