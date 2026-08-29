@@ -37,7 +37,6 @@ Authorization: Bearer {accessToken}
 | `email` | String | Y | 대학 이메일 |
 | `password` | String | Y | 비밀번호 |
 | `name` | String | Y | 이름 |
-| `universityId` | Long | Y | 대학 ID |
 | `major` | String | N | 전공 |
 | `introduction` | String | N | 자기소개 |
 
@@ -46,7 +45,6 @@ Authorization: Bearer {accessToken}
   "email": "student@yonsei.ac.kr",
   "password": "password123!",
   "name": "김학생",
-  "universityId": 1,
   "major": "컴퓨터과학과",
   "introduction": "웹 개발을 좋아하는 학생입니다."
 }
