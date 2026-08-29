@@ -7,7 +7,9 @@ public enum SupportedUniversity {
 
     YONSEI(1L, "yonsei.ac.kr", "연세대학교"),
     EWHA(2L, "ewha.ac.kr", "이화여자대학교"),
-    SOGANG(3L, "sogang.ac.kr", "서강대학교");
+    SOGANG(3L, "sogang.ac.kr", "서강대학교"),
+    HONGIK(4L, "hongik.ac.kr", "홍익대학교"),
+    MYONGJI(5L, "mju.ac.kr", "명지대학교");
 
     private final Long id;
     private final String emailDomain;

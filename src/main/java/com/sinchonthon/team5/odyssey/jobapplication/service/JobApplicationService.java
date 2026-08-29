@@ -16,6 +16,7 @@ import com.sinchonthon.team5.odyssey.jobapplication.repository.JobApplicationRep
 import com.sinchonthon.team5.odyssey.jobpost.JobPost;
 import com.sinchonthon.team5.odyssey.jobpost.JobPostErrorCode;
 import com.sinchonthon.team5.odyssey.jobpost.JobPostRepository;
+import com.sinchonthon.team5.odyssey.member.domain.SupportedUniversity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
@@ -297,11 +298,8 @@ public class JobApplicationService {
             return null;
         }
 
-        return switch (universityId.intValue()) {
-            case 1 -> "연세대학교";
-            case 2 -> "이화여자대학교";
-            case 3 -> "서강대학교";
-            default -> "알 수 없는 대학교";
-        };
+        return SupportedUniversity.fromId(universityId)
+                .map(SupportedUniversity::getName)
+                .orElse("알 수 없는 대학교");
     }
 }
