@@ -378,15 +378,19 @@ OWNER 권한만 요청할 수 있다.
 
 `POST /api/v1/job-posts/ai-refine`
 
+제목·카테고리·예산·마감일은 프론트에서 사장님이 직접 입력한다. 이 API는 본문(설명)만 LLM으로 다듬는다.
+
 #### Request Body
 
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `rawRequest` | String | Y | 사장님이 입력한 원본 요청 |
+| `category` | String | Y | 사장님이 선택한 카테고리, `WEB`, `IMAGE`, `SNS` |
 
 ```json
 {
-  "rawRequest": "신촌 파스타집인데 인스타에 올릴 메뉴 사진이랑 릴스 찍어줄 학생 구함. 예산 30만원, 다음주까지"
+  "rawRequest": "신촌 파스타집인데 인스타에 올릴 메뉴 사진이랑 릴스 찍어줄 학생 구함. 예산 30만원, 다음주까지",
+  "category": "SNS"
 }
 ```
 
@@ -397,14 +401,10 @@ OWNER 권한만 요청할 수 있다.
 ```json
 {
   "isSuccess": true,
-  "code": "COMMON_200",
+  "code": "JOBPOST_200_5",
   "message": "공고 정제 성공",
   "result": {
-    "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
-    "description": "메뉴 사진 촬영 및 인스타그램 릴스 영상 제작을 요청합니다.",
-    "category": "SNS",
-    "budget": 300000,
-    "deadline": "2026-09-05T23:59:59+09:00",
+    "description": "신촌 파스타 매장의 메뉴 사진을 촬영하고, 인기 있는 음악을 활용한 인스타그램 릴스 영상을 제작합니다. 예산은 300,000원이며 다음 주까지 완료를 목표로 합니다.",
     "rawRequest": "신촌 파스타집인데 인스타에 올릴 메뉴 사진이랑 릴스 찍어줄 학생 구함. 예산 30만원, 다음주까지"
   },
   "error": null
