@@ -158,6 +158,10 @@ public class JobPost {
         this.status = JobPostStatus.CANCELED;
     }
 
+    public void match() {
+        this.status = JobPostStatus.MATCHED;
+    }
+
     public boolean canAddImage() {
         return images.size() < MAX_IMAGE_COUNT;
     }
