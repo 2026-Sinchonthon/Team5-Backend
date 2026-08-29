@@ -1152,6 +1152,18 @@ STUDENT 권한만 요청할 수 있다.
 }
 ```
 
+#### 409 CONFLICT - 제출 기한 만료
+
+```json
+{
+  "isSuccess": false,
+  "code": "SUBMISSION_409_4",
+  "message": "결과물 제출 기한이 지났습니다.",
+  "result": null,
+  "error": null
+}
+```
+
 ---
 
 ## 7-2. 제출 내역 조회

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +70,7 @@ public class SubmissionService {
         if (!matching.canSubmit()) {
             throw new GeneralException(SubmissionErrorCode.INVALID_STATUS);
         }
+        validateDeadline(matching);
 
         int nextRound = submissionRepository
                 .findTopByMatchingIdOrderByRoundNumberDesc(matchingId)
@@ -238,6 +240,12 @@ public class SubmissionService {
     private void validateStudent(JobApplication application, Long studentId) {
         if (!application.isAppliedBy(studentId)) {
             throw new GeneralException(SubmissionErrorCode.FORBIDDEN);
+        }
+    }
+
+    private void validateDeadline(Matching matching) {
+        if (OffsetDateTime.now().isAfter(matching.getDeadline())) {
+            throw new GeneralException(SubmissionErrorCode.DEADLINE_EXCEEDED);
         }
     }
 
