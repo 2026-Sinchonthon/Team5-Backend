@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class JobApplicationController {
             value = "/job-posts/{jobPostId}/applications",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<ApplicationCreateResponse>> apply(
             Principal principal,
             @PathVariable Long jobPostId,
@@ -63,6 +65,7 @@ public class JobApplicationController {
     }
 
     @PostMapping("/applications/{applicationId}/cancel")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<ApplicationCancelResponse>> cancel(
             Principal principal,
             @PathVariable Long applicationId
@@ -83,6 +86,7 @@ public class JobApplicationController {
     }
 
     @GetMapping("/applications/me")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<List<ApplicationSummaryResponse>>> getMyApplications(
             Principal principal
     ) {
@@ -99,6 +103,7 @@ public class JobApplicationController {
     }
 
     @GetMapping("/job-posts/{jobPostId}/applications")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<List<ApplicantResponse>>> getApplicants(
             Principal principal,
             @PathVariable Long jobPostId
