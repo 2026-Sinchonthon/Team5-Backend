@@ -3,6 +3,7 @@ package com.sinchonthon.team5.odyssey.jobpost;
 import com.sinchonthon.team5.odyssey.jobpost.enums.JobPostCategory;
 import com.sinchonthon.team5.odyssey.jobpost.enums.JobPostStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import lombok.AccessLevel;
@@ -20,6 +23,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -68,6 +73,10 @@ public class JobPost {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    private List<JobPostImage> images = new ArrayList<>();
+
     private JobPost(
             Long ownerId,
             String title,
@@ -97,9 +106,10 @@ public class JobPost {
             JobPostCategory category,
             Integer budget,
             OffsetDateTime deadline,
-            Integer revisionLimit
+            Integer revisionLimit,
+            List<String> imageUrls
     ) {
-        return new JobPost(
+        JobPost jobPost = new JobPost(
                 ownerId,
                 title,
                 description,
@@ -109,6 +119,12 @@ public class JobPost {
                 deadline,
                 revisionLimit == null ? 4 : revisionLimit
         );
+
+        if (imageUrls != null) {
+            imageUrls.forEach(jobPost::addImage);
+        }
+
+        return jobPost;
     }
 
     public boolean isOwnedBy(Long memberId) {
@@ -136,5 +152,15 @@ public class JobPost {
 
     public void cancel() {
         this.status = JobPostStatus.CANCELED;
+    }
+
+    public JobPostImage addImage(String imageUrl) {
+        JobPostImage image = JobPostImage.of(this, imageUrl, images.size());
+        images.add(image);
+        return image;
+    }
+
+    public void removeImage(Long imageId) {
+        images.removeIf(image -> image.getId().equals(imageId));
     }
 }
