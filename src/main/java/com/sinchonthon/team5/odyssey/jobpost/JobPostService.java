@@ -5,6 +5,8 @@ import com.sinchonthon.team5.odyssey.global.exception.GeneralException;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostDetailResponse;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageAddRequest;
+import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostImageResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
@@ -40,7 +42,8 @@ public class JobPostService {
                 request.category(),
                 request.budget(),
                 request.deadline(),
-                request.revisionLimit()
+                request.revisionLimit(),
+                request.imageUrls()
         );
 
         return JobPostCreateResponse.from(jobPostRepository.save(jobPost));
@@ -86,6 +89,29 @@ public class JobPostService {
         validateEditable(jobPost);
 
         jobPost.cancel();
+    }
+
+    @Transactional
+    public JobPostImageResponse addImage(Long ownerId, Long jobPostId, JobPostImageAddRequest request) {
+        JobPost jobPost = findJobPostOrThrow(jobPostId);
+        validateOwner(jobPost, ownerId);
+        validateEditable(jobPost);
+
+        return JobPostImageResponse.from(jobPost.addImage(request.imageUrl()));
+    }
+
+    @Transactional
+    public void removeImage(Long ownerId, Long jobPostId, Long imageId) {
+        JobPost jobPost = findJobPostOrThrow(jobPostId);
+        validateOwner(jobPost, ownerId);
+        validateEditable(jobPost);
+
+        boolean exists = jobPost.getImages().stream().anyMatch(image -> image.getId().equals(imageId));
+        if (!exists) {
+            throw new GeneralException(JobPostErrorCode.IMAGE_NOT_FOUND);
+        }
+
+        jobPost.removeImage(imageId);
     }
 
     private JobPost findJobPostOrThrow(Long jobPostId) {
