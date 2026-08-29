@@ -9,7 +9,9 @@ import com.sinchonthon.team5.odyssey.auth.dto.response.LoginResponse;
 import com.sinchonthon.team5.odyssey.auth.dto.response.SignUpResponse;
 import com.sinchonthon.team5.odyssey.global.exception.GeneralException;
 import com.sinchonthon.team5.odyssey.member.domain.MemberRole;
+import com.sinchonthon.team5.odyssey.member.dto.MemberMeResponse;
 import com.sinchonthon.team5.odyssey.member.repository.MemberRepository;
+import com.sinchonthon.team5.odyssey.member.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +26,9 @@ class AuthServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberService memberService;
 
     @Test
     void 학생_회원가입을_하면_회원과_학생_프로필을_저장한다() {
@@ -107,5 +112,25 @@ class AuthServiceTest {
         )))
                 .isInstanceOf(GeneralException.class)
                 .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
+    }
+
+    @Test
+    void 학생은_마이페이지에서_회원정보와_학생_프로필을_조회한다() {
+        SignUpResponse signUpResponse = authService.signUpStudent(new StudentSignUpRequest(
+                "student@yonsei.ac.kr",
+                "password123!",
+                "김학생",
+                "컴퓨터과학과",
+                "웹 개발을 좋아합니다."
+        ));
+
+        MemberMeResponse response = memberService.getMyProfile(signUpResponse.memberId());
+
+        assertThat(response.role()).isEqualTo(MemberRole.STUDENT);
+        assertThat(response.profile()).isInstanceOf(MemberMeResponse.StudentProfileResponse.class);
+        MemberMeResponse.StudentProfileResponse profile =
+                (MemberMeResponse.StudentProfileResponse) response.profile();
+        assertThat(profile.universityName()).isEqualTo("연세대학교");
+        assertThat(profile.major()).isEqualTo("컴퓨터과학과");
     }
 }
