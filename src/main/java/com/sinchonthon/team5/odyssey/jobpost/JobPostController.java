@@ -57,7 +57,7 @@ public class JobPostController {
 
     @PostMapping("/ai-refine")
     @PreAuthorize("hasRole('OWNER')")
-    @Operation(summary = "AI 공고 정제", description = "사장님이 입력한 원문을 LLM으로 정제해 제목/설명/카테고리/예산/마감일 초안을 반환합니다.")
+    @Operation(summary = "AI 공고 정제", description = "사장님이 선택한 카테고리와 입력한 원문을 LLM으로 정제해 공고 설명(description) 초안을 반환합니다. 제목/예산/마감일은 사장님이 직접 입력합니다.")
     public ResponseEntity<ApiResponse<JobPostRefineResponse>> refine(
             @Valid @RequestBody JobPostRefineRequest request
     ) {
