@@ -10,6 +10,9 @@ import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostListItemResponse;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostSearchCondition;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostUpdateResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -41,11 +44,14 @@ import java.util.List;
 @RequestMapping("/api/v1/job-posts")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "공고", description = "외주 공고 등록, 조회, 수정 및 이미지 관리 API")
+@SecurityRequirement(name = "bearerAuth")
 public class JobPostController {
 
     private final JobPostService jobPostService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "공고 등록", description = "사장님이 공고 정보와 선택 이미지를 multipart/form-data로 등록합니다.")
     public ResponseEntity<ApiResponse<JobPostCreateResponse>> create(
             Principal principal,
             @Valid @RequestPart("request") JobPostCreateRequest request,
@@ -62,6 +68,7 @@ public class JobPostController {
     }
 
     @GetMapping
+    @Operation(summary = "공고 목록 조회", description = "카테고리, 상태, 예산, 정렬 조건으로 공고 목록을 페이지 조회합니다.")
     public ResponseEntity<ApiResponse<PageResponse<JobPostListItemResponse>>> getList(
             @ModelAttribute JobPostSearchCondition condition,
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -75,6 +82,7 @@ public class JobPostController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "내 공고 목록 조회", description = "로그인한 사장님이 등록한 공고 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<List<JobPostListItemResponse>>> getMyList(
             Principal principal
     ) {
@@ -87,6 +95,7 @@ public class JobPostController {
     }
 
     @GetMapping("/{jobPostId}")
+    @Operation(summary = "공고 상세 조회", description = "공고의 상세 정보와 등록된 이미지를 조회합니다.")
     public ResponseEntity<ApiResponse<JobPostDetailResponse>> getDetail(@PathVariable Long jobPostId) {
         JobPostDetailResponse response = jobPostService.getDetail(jobPostId);
 
@@ -96,6 +105,7 @@ public class JobPostController {
     }
 
     @PatchMapping("/{jobPostId}")
+    @Operation(summary = "공고 수정", description = "사장님이 본인의 OPEN 상태 공고를 수정합니다.")
     public ResponseEntity<ApiResponse<JobPostUpdateResponse>> update(
             Principal principal,
             @PathVariable Long jobPostId,
@@ -110,6 +120,7 @@ public class JobPostController {
     }
 
     @DeleteMapping("/{jobPostId}")
+    @Operation(summary = "공고 취소", description = "사장님이 본인의 OPEN 상태 공고를 취소합니다.")
     public ResponseEntity<Void> cancel(
             Principal principal,
             @PathVariable Long jobPostId
@@ -124,6 +135,7 @@ public class JobPostController {
             value = "/{jobPostId}/images",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @Operation(summary = "공고 이미지 추가", description = "사장님이 본인 공고에 이미지를 한 장 추가합니다.")
     public ResponseEntity<ApiResponse<JobPostImageResponse>> addImage(
             Principal principal,
             @PathVariable Long jobPostId,
@@ -138,6 +150,7 @@ public class JobPostController {
     }
 
     @DeleteMapping("/{jobPostId}/images/{imageId}")
+    @Operation(summary = "공고 이미지 삭제", description = "사장님이 본인 공고에서 이미지를 삭제합니다.")
     public ResponseEntity<Void> removeImage(
             Principal principal,
             @PathVariable Long jobPostId,
