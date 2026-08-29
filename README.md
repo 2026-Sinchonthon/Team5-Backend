@@ -1,3 +1,19 @@
+## 🐳 Docker 실행
+
+Java 21 기반으로 빌드되며, 기본 DB는 H2 인메모리입니다.
+
+```bash
+docker compose up --build
+```
+
+API는 `http://localhost:8080`, H2 콘솔은 `http://localhost:8080/h2-console`에서 접근할 수 있습니다.
+H2 콘솔 JDBC URL은 `jdbc:h2:mem:odyssey`입니다.
+
+외부 SQL DB를 연결할 때는 `.env.example`을 `.env`로 복사한 뒤
+`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_DRIVER_CLASS_NAME`,
+`SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`를 변경합니다.
+Compose 네트워크 내부 DB라면 JDBC URL의 호스트에 `localhost` 대신 DB 서비스명(예: `mysql`)을 사용합니다.
+
 ## 🌿 Branch Convention
 
 브랜치 이름은 아래 규칙을 따릅니다.
