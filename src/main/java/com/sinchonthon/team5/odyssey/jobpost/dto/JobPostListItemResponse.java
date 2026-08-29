@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 public record JobPostListItemResponse(
         Long jobPostId,
         String title,
+        String businessName,
         String thumbnailImageUrl,
         JobPostCategory category,
         Integer budget,
@@ -17,10 +18,11 @@ public record JobPostListItemResponse(
         OffsetDateTime createdAt
 ) {
 
-    public static JobPostListItemResponse from(JobPost jobPost) {
+    public static JobPostListItemResponse from(JobPost jobPost, String businessName) {
         return new JobPostListItemResponse(
                 jobPost.getId(),
                 jobPost.getTitle(),
+                businessName,
                 jobPost.getImages().isEmpty() ? null : jobPost.getImages().get(0).getImageUrl(),
                 jobPost.getCategory(),
                 jobPost.getBudget(),
