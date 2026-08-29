@@ -420,34 +420,32 @@ OWNER 권한만 요청할 수 있다.
 
 `POST /api/v1/job-posts`
 
-#### Request Body
+#### Content-Type
+
+`multipart/form-data`
+
+#### Request Parts
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `title` | String | Y | 공고 제목 |
-| `description` | String | Y | 작업 상세 설명 |
-| `rawRequest` | String | N | LLM 정제 이전 요청 |
-| `imageUrls` | String[] | N | 공고 이미지 URL 목록, 최대 10장 |
-| `category` | String | Y | `WEB`, `IMAGE`, `SNS` |
-| `budget` | Integer | Y | 예산 |
-| `deadline` | DateTime | Y | 작업 마감일 |
-| `revisionLimit` | Integer | N | 최대 수정 횟수, 기본값 4 |
+| `request` | JSON | Y | 공고 정보 |
+| `images` | File[] | N | 공고 이미지 파일, 최대 10장 |
+
+`request` part:
 
 ```json
 {
   "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
   "description": "메뉴 사진 촬영 및 릴스 영상 제작을 요청합니다.",
   "rawRequest": "메뉴 사진이랑 릴스 찍어줄 학생 구함",
-  "imageUrls": [
-    "https://storage.example.com/job-posts/31-1.jpg",
-    "https://storage.example.com/job-posts/31-2.jpg"
-  ],
   "category": "SNS",
   "budget": 300000,
   "deadline": "2026-09-05T23:59:59+09:00",
   "revisionLimit": 4
 }
 ```
+
+백엔드는 `images` 파일을 S3에 업로드한 뒤 반환된 URL을 `job_post_images`에 저장한다.
 
 ### RESPONSE
 
@@ -687,17 +685,17 @@ OWNER 권한만 요청할 수 있다.
 
 `POST /api/v1/job-posts/{jobPostId}/images`
 
-#### Request Body
+#### Content-Type
+
+`multipart/form-data`
+
+#### Request Parts
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `imageUrl` | String | Y | 추가할 이미지 URL |
+| `image` | File | Y | 추가할 이미지 파일 |
 
-```json
-{
-  "imageUrl": "https://storage.example.com/job-posts/31-3.jpg"
-}
-```
+백엔드는 `image` 파일을 S3에 업로드한 뒤 반환된 URL을 `job_post_images`에 저장한다.
 
 ### RESPONSE
 
@@ -752,17 +750,18 @@ STUDENT 권한만 요청할 수 있다.
 
 `POST /api/v1/job-posts/{jobPostId}/applications`
 
-#### Request Body
+#### Content-Type
+
+`multipart/form-data`
+
+#### Request Parts
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `message` | String | N | 사장님에게 전달할 지원 메시지 |
+| `message` | String | Y | 이력 설명 및 자기소개, 최대 1000자 |
+| `image` | File | N | 지원서 첨부 이미지 |
 
-```json
-{
-  "message": "인스타그램 콘텐츠 제작 경험이 있습니다. 포스터와 릴스 제작 모두 가능합니다."
-}
-```
+백엔드는 `image` 파일이 있으면 S3에 업로드한 뒤 반환된 URL을 `job_applications.image_url`에 저장한다.
 
 ### RESPONSE
 
@@ -776,6 +775,7 @@ STUDENT 권한만 요청할 수 있다.
   "data": {
     "applicationId": 51,
     "jobPostId": 31,
+    "imageUrl": "https://storage.example.com/job-applications/portfolio.jpg",
     "status": "PENDING",
     "appliedAt": "2026-08-29T15:20:00+09:00"
   }
