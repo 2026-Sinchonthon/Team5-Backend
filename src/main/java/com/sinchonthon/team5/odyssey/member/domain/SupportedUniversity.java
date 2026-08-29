@@ -5,20 +5,32 @@ import java.util.Optional;
 
 public enum SupportedUniversity {
 
-    YONSEI(1L, "yonsei.ac.kr"),
-    EWHA(2L, "ewha.ac.kr"),
-    SOGANG(3L, "sogang.ac.kr");
+    YONSEI(1L, "yonsei.ac.kr", "연세대학교"),
+    EWHA(2L, "ewha.ac.kr", "이화여자대학교"),
+    SOGANG(3L, "sogang.ac.kr", "서강대학교");
 
     private final Long id;
     private final String emailDomain;
+    private final String name;
 
-    SupportedUniversity(Long id, String emailDomain) {
+    SupportedUniversity(Long id, String emailDomain, String name) {
         this.id = id;
         this.emailDomain = emailDomain;
+        this.name = name;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static Optional<SupportedUniversity> fromId(Long id) {
+        return Arrays.stream(values())
+                .filter(university -> university.id.equals(id))
+                .findFirst();
     }
 
     public static Optional<SupportedUniversity> fromEmail(String email) {

@@ -27,11 +27,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -44,9 +44,10 @@ public class JobPostController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<JobPostCreateResponse>> create(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @Valid @RequestBody JobPostCreateRequest request
     ) {
+        Long ownerId = getMemberId(principal);
         JobPostCreateResponse response = jobPostService.create(ownerId, request);
 
         return ResponseEntity
@@ -69,8 +70,9 @@ public class JobPostController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<List<JobPostListItemResponse>>> getMyList(
-            @RequestHeader("X-Member-Id") Long ownerId
+            Principal principal
     ) {
+        Long ownerId = getMemberId(principal);
         List<JobPostListItemResponse> response = jobPostService.getMyList(ownerId);
 
         return ResponseEntity
@@ -89,10 +91,11 @@ public class JobPostController {
 
     @PatchMapping("/{jobPostId}")
     public ResponseEntity<ApiResponse<JobPostUpdateResponse>> update(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long jobPostId,
             @Valid @RequestBody JobPostUpdateRequest request
     ) {
+        Long ownerId = getMemberId(principal);
         JobPostUpdateResponse response = jobPostService.update(ownerId, jobPostId, request);
 
         return ResponseEntity
@@ -102,9 +105,10 @@ public class JobPostController {
 
     @DeleteMapping("/{jobPostId}")
     public ResponseEntity<Void> cancel(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long jobPostId
     ) {
+        Long ownerId = getMemberId(principal);
         jobPostService.cancel(ownerId, jobPostId);
 
         return ResponseEntity.noContent().build();
@@ -112,10 +116,11 @@ public class JobPostController {
 
     @PostMapping("/{jobPostId}/images")
     public ResponseEntity<ApiResponse<JobPostImageResponse>> addImage(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long jobPostId,
             @Valid @RequestBody JobPostImageAddRequest request
     ) {
+        Long ownerId = getMemberId(principal);
         JobPostImageResponse response = jobPostService.addImage(ownerId, jobPostId, request);
 
         return ResponseEntity
@@ -125,12 +130,17 @@ public class JobPostController {
 
     @DeleteMapping("/{jobPostId}/images/{imageId}")
     public ResponseEntity<Void> removeImage(
-            @RequestHeader("X-Member-Id") Long ownerId,
+            Principal principal,
             @PathVariable Long jobPostId,
             @PathVariable Long imageId
     ) {
+        Long ownerId = getMemberId(principal);
         jobPostService.removeImage(ownerId, jobPostId, imageId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private Long getMemberId(Principal principal) {
+        return Long.valueOf(principal.getName());
     }
 }
