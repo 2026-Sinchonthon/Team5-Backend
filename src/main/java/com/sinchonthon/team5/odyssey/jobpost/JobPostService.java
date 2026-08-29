@@ -1,6 +1,7 @@
 package com.sinchonthon.team5.odyssey.jobpost;
 
 import com.sinchonthon.team5.odyssey.global.api.PageResponse;
+import com.sinchonthon.team5.odyssey.global.code.GeneralErrorCode;
 import com.sinchonthon.team5.odyssey.global.exception.GeneralException;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateRequest;
 import com.sinchonthon.team5.odyssey.jobpost.dto.JobPostCreateResponse;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -49,16 +49,17 @@ public class JobPostService {
         return JobPostCreateResponse.from(jobPostRepository.save(jobPost));
     }
 
-    public PageResponse<JobPostListItemResponse> getList(JobPostSearchCondition condition, Pageable pageable) {
+    public PageResponse<JobPostListItemResponse> getList(JobPostSearchCondition condition, int page, int size) {
         Specification<JobPost> spec = Specification
                 .where(JobPostSpecs.categoryEquals(condition.category()))
                 .and(JobPostSpecs.statusEquals(condition.status()))
                 .and(JobPostSpecs.budgetGreaterThanOrEqual(condition.minBudget()))
                 .and(JobPostSpecs.budgetLessThanOrEqual(condition.maxBudget()));
 
-        Page<JobPost> page = jobPostRepository.findAll(spec, withSort(pageable, condition.sort()));
+        PageRequest pageRequest = PageRequest.of(page, size, resolveSort(condition.sort()));
+        Page<JobPost> result = jobPostRepository.findAll(spec, pageRequest);
 
-        return PageResponse.from(page, JobPostListItemResponse::from);
+        return PageResponse.from(result, JobPostListItemResponse::from);
     }
 
     public JobPostDetailResponse getDetail(Long jobPostId) {
@@ -73,6 +74,9 @@ public class JobPostService {
 
     @Transactional
     public JobPostUpdateResponse update(Long ownerId, Long jobPostId, JobPostUpdateRequest request) {
+        validateNotBlankIfPresent(request.title());
+        validateNotBlankIfPresent(request.description());
+
         JobPost jobPost = findJobPostOrThrow(jobPostId);
         validateOwner(jobPost, ownerId);
         validateEditable(jobPost);
@@ -93,9 +97,14 @@ public class JobPostService {
 
     @Transactional
     public JobPostImageResponse addImage(Long ownerId, Long jobPostId, JobPostImageAddRequest request) {
-        JobPost jobPost = findJobPostOrThrow(jobPostId);
+        JobPost jobPost = jobPostRepository.findByIdForUpdate(jobPostId)
+                .orElseThrow(() -> new GeneralException(JobPostErrorCode.NOT_FOUND));
         validateOwner(jobPost, ownerId);
         validateEditable(jobPost);
+
+        if (!jobPost.canAddImage()) {
+            throw new GeneralException(JobPostErrorCode.IMAGE_LIMIT_EXCEEDED);
+        }
 
         return JobPostImageResponse.from(jobPost.addImage(request.imageUrl()));
     }
@@ -131,17 +140,17 @@ public class JobPostService {
         }
     }
 
-    private Pageable withSort(Pageable pageable, JobPostSortType sortType) {
-        if (pageable.getSort().isSorted()) {
-            return pageable;
+    private void validateNotBlankIfPresent(String value) {
+        if (value != null && value.isBlank()) {
+            throw new GeneralException(GeneralErrorCode.BAD_REQUEST);
         }
+    }
 
-        Sort sort = switch (sortType == null ? JobPostSortType.LATEST : sortType) {
+    private Sort resolveSort(JobPostSortType sortType) {
+        return switch (sortType == null ? JobPostSortType.LATEST : sortType) {
             case DEADLINE -> Sort.by(Sort.Direction.ASC, "deadline");
             case BUDGET_HIGH -> Sort.by(Sort.Direction.DESC, "budget");
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
         };
-
-        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 }

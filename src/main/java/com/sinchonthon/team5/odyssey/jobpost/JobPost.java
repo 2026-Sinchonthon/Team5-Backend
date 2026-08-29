@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -31,6 +32,8 @@ import java.util.List;
 @Table(name = "job_posts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobPost {
+
+    public static final int MAX_IMAGE_COUNT = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +78,7 @@ public class JobPost {
 
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
+    @BatchSize(size = 50)
     private List<JobPostImage> images = new ArrayList<>();
 
     private JobPost(
@@ -152,6 +156,10 @@ public class JobPost {
 
     public void cancel() {
         this.status = JobPostStatus.CANCELED;
+    }
+
+    public boolean canAddImage() {
+        return images.size() < MAX_IMAGE_COUNT;
     }
 
     public JobPostImage addImage(String imageUrl) {
