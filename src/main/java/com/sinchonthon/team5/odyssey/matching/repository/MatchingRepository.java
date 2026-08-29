@@ -24,6 +24,8 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
                 m.id as matchingId,
                 j.id as jobPostId,
                 j.title as title,
+                op.businessName as businessName,
+                image.imageUrl as thumbnailImageUrl,
                 m.agreedAmount as agreedAmount,
                 m.deadline as deadline,
                 m.revisionCount as revisionCount,
@@ -32,6 +34,8 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
             from Matching m
             join JobPost j on j.id = m.jobPostId
             join JobApplication a on a.id = m.applicationId
+            join OwnerProfile op on op.memberId = j.ownerId
+            left join j.images image on image.sortOrder = 0
             where (j.ownerId = :memberId or a.studentId = :memberId)
               and (:status is null or m.status = :status)
             order by m.matchedAt desc
