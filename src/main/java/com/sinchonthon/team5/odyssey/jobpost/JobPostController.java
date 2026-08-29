@@ -69,6 +69,7 @@ public class JobPostController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "공고 등록", description = "사장님이 공고 정보와 선택 이미지를 multipart/form-data로 등록합니다.")
     public ResponseEntity<ApiResponse<JobPostCreateResponse>> create(
             Principal principal,
@@ -100,6 +101,7 @@ public class JobPostController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "내 공고 목록 조회", description = "로그인한 사장님이 등록한 공고 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<List<JobPostListItemResponse>>> getMyList(
             Principal principal
@@ -123,6 +125,7 @@ public class JobPostController {
     }
 
     @PatchMapping("/{jobPostId}")
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "공고 수정", description = "사장님이 본인의 OPEN 상태 공고를 수정합니다.")
     public ResponseEntity<ApiResponse<JobPostUpdateResponse>> update(
             Principal principal,
@@ -138,6 +141,7 @@ public class JobPostController {
     }
 
     @DeleteMapping("/{jobPostId}")
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "공고 취소", description = "사장님이 본인의 OPEN 상태 공고를 취소합니다.")
     public ResponseEntity<Void> cancel(
             Principal principal,
@@ -153,6 +157,7 @@ public class JobPostController {
             value = "/{jobPostId}/images",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "공고 이미지 추가", description = "사장님이 본인 공고에 이미지를 한 장 추가합니다.")
     public ResponseEntity<ApiResponse<JobPostImageResponse>> addImage(
             Principal principal,
@@ -168,6 +173,7 @@ public class JobPostController {
     }
 
     @DeleteMapping("/{jobPostId}/images/{imageId}")
+    @PreAuthorize("hasRole('OWNER')")
     @Operation(summary = "공고 이미지 삭제", description = "사장님이 본인 공고에서 이미지를 삭제합니다.")
     public ResponseEntity<Void> removeImage(
             Principal principal,
