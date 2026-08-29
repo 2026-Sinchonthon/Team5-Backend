@@ -12,6 +12,10 @@ public interface MatchingSummaryProjection {
 
     String getTitle();
 
+    String getBusinessName();
+
+    String getThumbnailImageUrl();
+
     Integer getAgreedAmount();
 
     OffsetDateTime getDeadline();

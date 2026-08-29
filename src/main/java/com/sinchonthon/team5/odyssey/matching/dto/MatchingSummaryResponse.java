@@ -17,7 +17,12 @@ public record MatchingSummaryResponse(
     public static MatchingSummaryResponse from(MatchingSummaryProjection projection) {
         return new MatchingSummaryResponse(
                 projection.getMatchingId(),
-                new JobPostSummary(projection.getJobPostId(), projection.getTitle()),
+                new JobPostSummary(
+                        projection.getJobPostId(),
+                        projection.getTitle(),
+                        projection.getBusinessName(),
+                        projection.getThumbnailImageUrl()
+                ),
                 projection.getAgreedAmount(),
                 projection.getDeadline(),
                 projection.getRevisionCount(),
@@ -28,7 +33,9 @@ public record MatchingSummaryResponse(
 
     public record JobPostSummary(
             Long jobPostId,
-            String title
+            String title,
+            String businessName,
+            String thumbnailImageUrl
     ) {
     }
 }

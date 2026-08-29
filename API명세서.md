@@ -991,7 +991,9 @@ OWNER 권한만 요청할 수 있다.
       "matchingId": 71,
       "jobPost": {
         "jobPostId": 31,
-        "title": "신촌 파스타 매장 SNS 콘텐츠 제작"
+        "title": "신촌 파스타 매장 SNS 콘텐츠 제작",
+        "businessName": "신촌 파스타",
+        "thumbnailImageUrl": "https://storage.example.com/job-posts/thumbnail.jpg"
       },
       "agreedAmount": 300000,
       "deadline": "2026-09-05T23:59:59+09:00",
