@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Local docs ###
+API_SPEC.md
+schema.sql
