@@ -40,6 +40,9 @@ public class JobApplication {
     @Column(name = "status", nullable = false, length = 30)
     private JobApplicationStatus status;
 
+    @Column(name = "image_url", length = 1000)
+    private String imageUrl;
+
     @CreationTimestamp
     @Column(name = "applied_at", nullable = false, updatable = false)
     private OffsetDateTime appliedAt;
@@ -61,13 +64,10 @@ public class JobApplication {
     public static JobApplication create(
             Long jobPostId,
             Long studentId,
-            String message
+            String message,
+            String imageUrl
     ) {
-        return new JobApplication(
-                jobPostId,
-                studentId,
-                message
-        );
+        return new JobApplication(jobPostId, studentId, message, imageUrl);
     }
 
     public boolean isPending() {
