@@ -14,6 +14,16 @@ public enum JobApplicationSuccessCode implements BaseSuccessCode {
             HttpStatus.OK,
             "APPLICATION_200_1",
             "지원 취소 성공"
+    ),
+    MY_APPLICATIONS_READ(
+            HttpStatus.OK,
+            "APPLICATION_200_2",
+            "지원 목록 조회 성공"
+    ),
+    APPLICANTS_READ(
+            HttpStatus.OK,
+            "APPLICATION_200_3",
+            "지원자 목록 조회 성공"
     );
 
     private final HttpStatus status;

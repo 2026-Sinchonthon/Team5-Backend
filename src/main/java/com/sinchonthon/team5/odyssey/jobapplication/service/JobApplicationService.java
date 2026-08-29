@@ -6,6 +6,10 @@ import com.sinchonthon.team5.odyssey.jobapplication.domain.JobApplication;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCancelResponse;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCreateRequest;
 import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationCreateResponse;
+import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicantResponse;
+import com.sinchonthon.team5.odyssey.jobapplication.dto.ApplicationSummaryResponse;
+import com.sinchonthon.team5.odyssey.jobapplication.repository.ApplicantProjection;
+import com.sinchonthon.team5.odyssey.jobapplication.repository.ApplicationSummaryProjection;
 import com.sinchonthon.team5.odyssey.jobapplication.repository.JobApplicationRepository;
 import com.sinchonthon.team5.odyssey.jobpost.JobPost;
 import com.sinchonthon.team5.odyssey.jobpost.JobPostErrorCode;
@@ -13,6 +17,8 @@ import com.sinchonthon.team5.odyssey.jobpost.JobPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +76,82 @@ public class JobApplicationService {
         );
     }
 
+    public List<ApplicationSummaryResponse> getMyApplications(Long studentId) {
+        return jobApplicationRepository
+                .findApplicationSummariesByStudentId(studentId)
+                .stream()
+                .map(this::toApplicationSummaryResponse)
+                .toList();
+    }
+
+    public List<ApplicantResponse> getApplicants(
+            Long ownerId,
+            Long jobPostId
+    ) {
+        JobPost jobPost = findJobPostOrThrow(jobPostId);
+        validateOwner(jobPost, ownerId);
+
+        return jobApplicationRepository
+                .findApplicantProjectionsByJobPostId(jobPostId)
+                .stream()
+                .map(this::toApplicantResponse)
+                .toList();
+    }
+
+    private ApplicationSummaryResponse toApplicationSummaryResponse(
+            ApplicationSummaryProjection projection
+    ) {
+        ApplicationSummaryResponse.JobPostSummary jobPost =
+                new ApplicationSummaryResponse.JobPostSummary(
+                        projection.getJobPostId(),
+                        projection.getTitle(),
+                        projection.getBusinessName(),
+                        projection.getBudget(),
+                        projection.getDeadline()
+                );
+
+        return new ApplicationSummaryResponse(
+                projection.getApplicationId(),
+                jobPost,
+                projection.getStatus(),
+                projection.getAppliedAt()
+        );
+    }
+
+    private ApplicantResponse toApplicantResponse(
+            ApplicantProjection projection
+    ) {
+        ApplicantResponse.StudentSummary student =
+                new ApplicantResponse.StudentSummary(
+                        projection.getMemberId(),
+                        projection.getName(),
+                        resolveUniversityName(projection.getUniversityId()),
+                        projection.getMajor(),
+                        projection.getIntroduction()
+                );
+
+        return new ApplicantResponse(
+                projection.getApplicationId(),
+                student,
+                projection.getMessage(),
+                projection.getStatus(),
+                projection.getAppliedAt()
+        );
+    }
+
+    private String resolveUniversityName(Long universityId) {
+        if (universityId == null) {
+            return null;
+        }
+
+        return switch (universityId.intValue()) {
+            case 1 -> "연세대학교";
+            case 2 -> "이화여자대학교";
+            case 3 -> "서강대학교";
+            default -> "알 수 없는 대학교";
+        };
+    }
+
     private JobPost findJobPostOrThrow(Long jobPostId) {
         return jobPostRepository.findById(jobPostId)
                 .orElseThrow(() ->
@@ -123,6 +205,12 @@ public class JobApplicationService {
             throw new GeneralException(
                     JobApplicationErrorCode.NOT_CANCELABLE
             );
+        }
+    }
+
+    private void validateOwner(JobPost jobPost, Long ownerId) {
+        if (!jobPost.isOwnedBy(ownerId)) {
+            throw new GeneralException(JobPostErrorCode.FORBIDDEN);
         }
     }
 }
